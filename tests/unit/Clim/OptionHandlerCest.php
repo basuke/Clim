@@ -81,7 +81,8 @@ class OrderHandlerCest
         $I->assertTrue($handler->needValue());
         $I->assertEquals('TIME_STR', $handler->metaVar());
 
-        $I->assertTrue($handler->handle('t', '42', $context));
+        $context->tentative('42');
+        $I->assertTrue($handler->handle('t', $context));
         $I->assertEquals($context['t'], '42');
     }
 
@@ -92,7 +93,7 @@ class OrderHandlerCest
         $handler = new OptionHandler('-t|--time {TIME_STR}');
         $context = new Context(['365']);
 
-        $I->assertTrue($handler->handle('time', null, $context));
+        $I->assertTrue($handler->handle('time', $context));
         $I->assertEquals($context['time'], '365');
         $I->assertFalse($context->hasNext());
     }
@@ -107,7 +108,8 @@ class OrderHandlerCest
         $I->expectException(
             \Clim\Exception\OptionException::class,
             function () use ($handler, $context) {
-                $handler->handle('time', '123abc', $context);
+                $context->tentative('123abc');
+                $handler->handle('time', $context);
             });
     }
 }

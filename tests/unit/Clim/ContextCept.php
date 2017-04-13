@@ -30,3 +30,9 @@ $I->assertEquals($context->arguments(), ['foo', 'hello', 'world']);
 $context->unshift('xxx');
 $context->push('yyy');
 $I->assertEquals($context->arguments(), ['foo', 'yyy', 'xxx', 'hello', 'world']);
+
+$I->assertTrue(is_null($context->tentative()));
+$context->tentative('hi');
+$I->assertEquals($context->tentative(), 'hi');
+$I->assertTrue(is_null($context->tentative()));
+

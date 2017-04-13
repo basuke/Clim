@@ -50,15 +50,17 @@ class OptionHandler
         }
     }
 
-    public function handle($option, $value, Context $context)
+    public function handle($option, Context $context)
     {
         $this->parse();
 
         if (!$this->match($option)) return false;
 
         if ($this->_need_value) {
-            if (is_null($value) && $context->hasNext()) {
-                $value = $context->next();
+            $value = $context->tentative();
+
+            if (is_null($value)) {
+                $value = $context->hasNext() ? $context->next() : '';
             }
 
             if ($this->_pattern) {

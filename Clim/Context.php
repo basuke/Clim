@@ -16,6 +16,9 @@ class Context implements \ArrayAccess
     /** @var array $_arguments */
     protected $_arguments;
 
+    /** @var string hold tentative value */
+    protected $_tentative;
+
     public function __construct(array $argv)
     {
         $this->_argv = $argv;
@@ -62,6 +65,19 @@ class Context implements \ArrayAccess
     public function arguments()
     {
         return array_merge($this->_arguments, $this->_argv);
+    }
+
+    public function tentative($value = null)
+    {
+        if (is_null($value)) {
+            if (!is_null($this->_tentative)) {
+                $value = $this->_tentative;
+                $this->_tentative = null;
+            }
+            return $value;
+        } else {
+            $this->_tentative = $value;
+        }
     }
 
     protected function target($index)

@@ -38,33 +38,42 @@ class Runner
                 $context->push($arg);
             } elseif ($arg[1] != '-') {
                 // short option
-                $arg = substr($arg, 1);
-                while ($arg) {
-                    $option = $arg[0];
-                    $arg = strlen($arg) > 1 ? substr($arg, 1) : null;
-
-                    $this->handle($option, $arg, $context);
-                }
+                $this->parseShortOption(substr($arg, 1), $context);
             } else {
-                // long option
-                $pos = strpos($arg, '=');
-                if ($pos > 2) {
-                    $option = substr($arg, 2, $pos - 2);
-                    $arg = substr($arg, $pos + 1);
-                } else {
-                    $option = substr($arg, 2);
-                    $arg = null;
-                }
-
-                $this->handle($option, $arg, $context);
+                $this->parseLongOption(substr($arg, 2), $context);
             }
         }
     }
 
-    protected function handle($option, $value, Context $context)
+    protected function parseShortOption($arg, Context $context)
     {
-        foreach ($this->handlers as /** @var Option $handler */ $handler) {
-            if ($handler->handle($option, $value, $context)) return;
+        while ($arg) {
+            $option = $arg[0];
+            $arg = strlen($arg) > 1 ? substr($arg, 1) : null;
+
+            $context->tentative($arg);
+            $this->handle($option, $context);
+            $arg = $context->tentative();
+        }
+    }
+
+    protected function parseLongOption($option, Context $context)
+    {
+        // long option
+        $pos = strpos($option, '=');
+
+        if ($pos !== false) {
+            $context->tentative(substr($option, $pos + 1));
+            $option = substr($option, 0, $pos);
+        }
+
+        $this->handle($option, $context);
+    }
+
+    protected function handle($option, Context $context)
+    {
+        foreach ($this->handlers as /** @var OptionHandler */ $handler) {
+            if ($handler->handle($option, $context)) return;
         }
 
         throw new OptionException();
