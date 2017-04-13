@@ -13,8 +13,8 @@ class App {
     /** @var Closure $task */
     private $task;
 
-    /** @var array $handlers */
-    private $handlers = [];
+    /** @var array $parsers */
+    private $parsers = [];
 
     /**
      * Constructor of Clim\App
@@ -54,9 +54,9 @@ class App {
             $flags |= Option::TYPE_BOOL;
         }
 
-        $handler = new OptionHandler($option, $flags, $this->containerBoundCallable($callable));
-        $this->handlers[] = $handler;
-        return $handler;
+        $parser = new OptionParser($option, $flags, $this->containerBoundCallable($callable));
+        $this->parsers[] = $parser;
+        return $parser;
     }
 
     public function dispatch($option, $callable)
@@ -70,10 +70,12 @@ class App {
 
     public function run()
     {
-        $runner = new Runner($this->handlers);
+        $runner = new Runner($this->parsers);
         $context = $runner->run($this->getContainer()->get('argv'));
 
-        call_user_func($this->task, new Collection($context->options()), new Collection($context->arguments()));
+        if ($this->task) {
+            call_user_func($this->task, new Collection($context->options()), new Collection($context->arguments()));
+        }
     }
 
     protected function containerBoundCallable($callable)

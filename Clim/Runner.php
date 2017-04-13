@@ -8,15 +8,15 @@ use \Psr\Container\ContainerInterface;
 
 class Runner
 {
-    /** @var array $handlers */
-    private $handlers = [];
+    /** @var array $parsers */
+    private $parsers = [];
 
     /**
-     * @param OptionHandler[] $handlers
+     * @param OptionParser[] $parsers
      */
-    public function __construct(array $handlers)
+    public function __construct(array $parsers)
     {
-        $this->handlers = $handlers;
+        $this->parsers = $parsers;
     }
 
     public function run(array $argv)
@@ -52,7 +52,7 @@ class Runner
             $arg = strlen($arg) > 1 ? substr($arg, 1) : null;
 
             $context->tentative($arg);
-            $this->handle($option, $context);
+            $this->parse($option, $context);
             $arg = $context->tentative();
         }
     }
@@ -67,13 +67,13 @@ class Runner
             $option = substr($option, 0, $pos);
         }
 
-        $this->handle($option, $context);
+        $this->parse($option, $context);
     }
 
-    protected function handle($option, Context $context)
+    protected function parse($option, Context $context)
     {
-        foreach ($this->handlers as /** @var OptionHandler */ $handler) {
-            if ($handler->handle($option, $context)) return;
+        foreach ($this->parsers as /** @var OptionParser */ $parser) {
+            if ($parser->parse($option, $context)) return;
         }
 
         throw new OptionException();

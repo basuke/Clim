@@ -1,17 +1,17 @@
 <?php
 
 use Clim\Context;
-use Clim\OptionHandler;
+use Clim\OptionParser;
 use Clim\Runner;
 
 $I = new UnitTester($scenario);
 $I->wantTo("define Runner features");
 
 $runner = new Runner([
-    (new OptionHandler('-a')),
-    (new OptionHandler('-b|--boo')),
-    (new OptionHandler('--case {CASE}')),
-    (new OptionHandler('-d|--do {ACTION}')),
+    (new OptionParser('-a')),
+    (new OptionParser('-b|--boo')),
+    (new OptionParser('--case {CASE}')),
+    (new OptionParser('-d|--do {ACTION}')),
 ]);
 
 $context = $runner->run(['program_name', 'hello', '-a', '--do', 'foo', 'bar']);

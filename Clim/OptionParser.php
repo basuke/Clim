@@ -2,7 +2,7 @@
 
 namespace Clim;
 
-class OptionHandler
+class OptionParser
 {
     /** @var string $definition */
     protected $definition;
@@ -50,9 +50,9 @@ class OptionHandler
         }
     }
 
-    public function handle($option, Context $context)
+    public function parse($option, Context $context)
     {
-        $this->parse();
+        $this->parseDefinition();
 
         if (!$this->match($option)) return false;
 
@@ -79,23 +79,23 @@ class OptionHandler
 
     public function match($option)
     {
-        $this->parse();
+        $this->parseDefinition();
         return in_array($option, $this->options);
     }
 
     public function needValue()
     {
-        $this->parse();
+        $this->parseDefinition();
         return $this->_need_value;
     }
 
     public function metaVar()
     {
-        $this->parse();
+        $this->parseDefinition();
         return $this->_meta_var;
     }
 
-    public function parse()
+    public function parseDefinition()
     {
         if (!empty($this->options)) return;
 
