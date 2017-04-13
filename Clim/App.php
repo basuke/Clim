@@ -70,10 +70,10 @@ class App {
 
     public function run()
     {
-        $parser = new Parser($this->handlers);
-        list($options, $argv) = $parser->parse($this->getContainer()->get('argv'));
+        $runner = new Runner($this->handlers);
+        $context = $runner->run($this->getContainer()->get('argv'));
 
-        call_user_func($this->task, $options, $argv);
+        call_user_func($this->task, new Collection($context->options()), new Collection($context->arguments()));
     }
 
     protected function containerBoundCallable($callable)

@@ -16,9 +16,6 @@ class OptionHandler
     /** @var array $options */
     protected $options = [];
 
-    /** @var mixed value $_value */
-    protected $_value;
-
     /** @var bool $_need_value */
     protected $_need_value = false;
 
@@ -43,11 +40,6 @@ class OptionHandler
         $this->callable = $callable;
     }
 
-    public function reset()
-    {
-        $this->_value = null;
-    }
-
     public function description($str = null)
     {
         if (is_null($str)) {
@@ -58,20 +50,15 @@ class OptionHandler
         }
     }
 
-    public function value()
-    {
-        return $this->_value;
-    }
-
-    public function evaluate($option, $value, Collection $argv)
+    public function handle($option, $value, Context $context)
     {
         $this->parse();
 
         if (!$this->match($option)) return false;
 
         if ($this->_need_value) {
-            if (is_null($value) && $argv->count()) {
-                $value = $argv->shift();
+            if (is_null($value) && $context->hasNext()) {
+                $value = $context->next();
             }
 
             if ($this->_pattern) {
@@ -80,20 +67,12 @@ class OptionHandler
                 }
             }
 
-            $this->_value = $value;
+            $context[$option] = $value;
         } else {
-            $this->_value = true;
+            $context[$option] = true;
         }
 
         return true;
-    }
-
-    public function collect(Collection $options)
-    {
-        $this->parse();
-        foreach ($this->options as $option) {
-            $options[$option] = $this->_value;
-        }
     }
 
     public function match($option)

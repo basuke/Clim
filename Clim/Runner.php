@@ -6,7 +6,7 @@ use \ArrayIterator;
 use \Closure;
 use \Psr\Container\ContainerInterface;
 
-class Parser
+class Runner
 {
     /** @var array $handlers */
     private $handlers = [];
@@ -19,31 +19,23 @@ class Parser
         $this->handlers = $handlers;
     }
 
-    public function parse(array $argv)
+    public function run(array $argv)
     {
-        $arguments = $this->evaluateArguments(array_slice($argv, 1));
-        $options = $this->collectOptions();
-
-        foreach ($this->handlers as $handler) {
-            $handler->reset();
-        }
-
-        return [$options, $arguments];
+        $context = new Context(array_slice($argv, 1));
+        $this->parseArguments($context);
+        return $context;
     }
 
-    protected function evaluateArguments(array $argv)
+    protected function parseArguments(Context $context)
     {
-        $unused = new Collection();
-        $arguments = new Collection($argv);
-
-        while (!$arguments->isEmpty()) {
+        while ($context->hasNext()) {
             /** @var string $arg */
-            $arg = $arguments->shift();
+            $arg = $context->next();
 
             if ($arg == '--') break;
 
             if ($arg[0] != '-' || strlen($arg) <= 1) {
-                $unused->push($arg);
+                $context->push($arg);
             } elseif ($arg[1] != '-') {
                 // short option
                 $arg = substr($arg, 1);
@@ -51,7 +43,7 @@ class Parser
                     $option = $arg[0];
                     $arg = strlen($arg) > 1 ? substr($arg, 1) : null;
 
-                    $this->handleOption($option, $arg, $arguments);
+                    $this->handle($option, $arg, $context);
                 }
             } else {
                 // long option
@@ -64,30 +56,17 @@ class Parser
                     $arg = null;
                 }
 
-                $this->handleOption($option, $arg, $arguments);
+                $this->handle($option, $arg, $context);
             }
         }
-
-        return $unused->append($arguments);
     }
 
-    protected function handleOption($option, $value, Collection $arguments)
+    protected function handle($option, $value, Context $context)
     {
         foreach ($this->handlers as /** @var Option $handler */ $handler) {
-            if ($handler->evaluate($option, $value, $arguments)) return true;
+            if ($handler->handle($option, $value, $context)) return true;
         }
 
         return false;
-    }
-
-    protected function collectOptions()
-    {
-        $options = new Collection([]);
-
-        foreach ($this->handlers as /** @var Option $handler */ $handler) {
-            $handler->collect($options);
-        }
-
-        return $options;
     }
 }

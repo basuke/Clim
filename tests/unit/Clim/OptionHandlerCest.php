@@ -76,13 +76,13 @@ class OrderHandlerCest
         $I->wantTo('see the handler works with option with value');
 
         $handler = new OptionHandler('-t|--time {TIME_STR}');
-        $argv = new Collection();
+        $context = new Context([]);
 
         $I->assertTrue($handler->needValue());
         $I->assertEquals('TIME_STR', $handler->metaVar());
 
-        $I->assertTrue($handler->evaluate('t', '42', $argv));
-        $I->assertEquals($handler->value(), '42');
+        $I->assertTrue($handler->handle('t', '42', $context));
+        $I->assertEquals($context['t'], '42');
     }
 
     public function test8(UnitTester $I)
@@ -90,11 +90,11 @@ class OrderHandlerCest
         $I->wantTo('see the handler works with option with value from extra arguments collection');
 
         $handler = new OptionHandler('-t|--time {TIME_STR}');
-        $argv = new Collection(['365']);
+        $context = new Context(['365']);
 
-        $I->assertTrue($handler->evaluate('time', null, $argv));
-        $I->assertEquals($handler->value(), '365');
-        $I->assertTrue($argv->isEmpty());
+        $I->assertTrue($handler->handle('time', null, $context));
+        $I->assertEquals($context['time'], '365');
+        $I->assertFalse($context->hasNext());
     }
 
     public function test9(UnitTester $I)
@@ -102,12 +102,12 @@ class OrderHandlerCest
         $I->wantTo('see the handler works with option with value and pattern');
 
         $handler = new OptionHandler('-t|--time {TIME_STR|\\d+}');
-        $argv = new Collection();
+        $context = new Context([]);
 
         $I->expectException(
             \Clim\Exception\OptionException::class,
-            function () use ($handler, $argv) {
-                $handler->evaluate('time', '123abc', $argv);
+            function () use ($handler, $context) {
+                $handler->handle('time', '123abc', $context);
             });
     }
 }

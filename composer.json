@@ -27,8 +27,11 @@
     },
     "scripts": {
         "test": [
-            "@run-unittest"
+            "@unittest"
         ],
-        "run-unittest": "codecept run unit"
+        "unittest": "codecept run unit",
+        "codecept": "codecept",
+        "cest": "codecept generate:cest unit",
+        "cept": "codecept generate:cept unit"
     }
 }
