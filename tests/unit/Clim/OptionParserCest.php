@@ -88,13 +88,14 @@ class OptionParserCest
 
     public function test8(UnitTester $I)
     {
-        $I->wantTo('see the parser works with option with value from extra arguments collection');
+        $I->wantTo('see parser works w/ options from extra arguments');
 
         $parser = new OptionParser('-t|--time {TIME_STR}');
         $context = new Context(['365']);
 
         $I->assertTrue($parser->parse('time', $context));
         $I->assertEquals($context['time'], '365');
+        $I->assertEquals($context['t'], '365');
         $I->assertFalse($context->hasNext());
     }
 
@@ -103,13 +104,25 @@ class OptionParserCest
         $I->wantTo('see the parser works with option with value and pattern');
 
         $parser = new OptionParser('-t|--time {TIME_STR|\\d+}');
-        $context = new Context([]);
+        $context = new Context(['123abc']);
 
         $I->expectException(
             \Clim\Exception\OptionException::class,
             function () use ($parser, $context) {
-                $context->tentative('123abc');
                 $parser->parse('time', $context);
+            });
+    }
+
+    public function test10(UnitTester $I)
+    {
+        $I->wantTo('detect invalid regular expression error');
+
+        $parser = new OptionParser('-t {TIME_STR|[abc}'); // "[abc" is invalid regex
+
+        $I->expectException(
+            \Clim\Exception\DefinitionException::class,
+            function () use ($parser) {
+                $parser->metaVar(); // causes definition parsing
             });
     }
 }

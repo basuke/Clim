@@ -37,24 +37,29 @@ class Runner
             if ($arg == '--') break;
 
             if ($arg[0] != '-' || strlen($arg) <= 1) {
-                /** @var ArgumentHandler */
-                $handler = $this->handlers->shift();
-
-                if ($handler) {
-                    $handled = $handler->handle($arg, $context);
-                    if ($handled) return;
-                } else {
-                    $context->push($arg);
-                }
+                $handled = $this->handleArgument($arg, $context);
             } elseif ($arg[1] != '-') {
                 // short option
-                $this->parseShortOption(substr($arg, 1), $context);
+                $handled = $this->parseShortOption(substr($arg, 1), $context);
             } else {
-                $this->parseLongOption(substr($arg, 2), $context);
+                $handled = $this->parseLongOption(substr($arg, 2), $context);
             }
+            if ($handled) return;
         }
 
         return $context;
+    }
+
+    protected function handleArgument($arg, Context $context)
+    {
+        /** @var ArgumentHandler */
+        $handler = $this->handlers->shift();
+
+        if ($handler) {
+            return $handler->handle($arg, $context);
+        } else {
+            $context->push($arg);
+        }
     }
 
     protected function parseShortOption($arg, Context $context)
@@ -80,6 +85,10 @@ class Runner
         }
 
         $this->parse($option, $context);
+
+        if (!is_null($context->tentative())) {
+            throw new Exception\OptionException("value is not needed");
+        }
     }
 
     protected function parse($option, Context $context)
@@ -89,6 +98,6 @@ class Runner
             if ($parsed) return;
         }
 
-        throw new OptionException();
+        throw new OptionException("unknown option");
     }
 }

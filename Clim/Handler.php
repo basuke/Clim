@@ -91,7 +91,7 @@ class Handler
     {
         $this->_pattern = '/^'. str_replace('/', '\\/', $pattern). '$/';
         if (@preg_match($this->_pattern, null) === false) {
-            throw new Exception\OptionException();
+            throw new Exception\DefinitionException("invalid regular expression pattern");
         }
     }
 

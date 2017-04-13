@@ -25,15 +25,16 @@ class OptionParser extends Handler
 
             if ($this->_pattern) {
                 if (!preg_match($this->_pattern, $value)) {
-                    throw new Exception\OptionException();
+                    throw new Exception\OptionException("pattern does't match");
                 }
             }
-
-            $context[$option] = $value;
         } else {
-            $context[$option] = true;
+            $value = true;
         }
 
+        foreach ($this->options as $key) {
+            $context[$key] = $value;
+        }
         return true;
     }
 

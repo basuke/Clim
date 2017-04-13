@@ -61,6 +61,9 @@ class App {
         return $parser;
     }
 
+    /**
+     * @param
+     */
     public function dispatch($meta_var, $children)
     {
         $dispatcher = new Dispatcher($meta_var, $children, $this->getContainer());
