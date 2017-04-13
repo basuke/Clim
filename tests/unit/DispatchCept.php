@@ -28,7 +28,8 @@ $output = $I->captureOutput(function () use($app) {
     $container = $app->getContainer();
     $container['argv'] = ['hello_dispatch', '--age=49', 'foo'];
     // try {
-        $app->run();
+        $context = $app->run();
+        var_dump($context);
     // } catch (\Exception $e) {
 
     // }

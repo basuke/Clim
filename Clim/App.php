@@ -79,6 +79,8 @@ class App {
         if ($this->task) {
             call_user_func($this->task, new Collection($context->options()), new Collection($context->arguments()));
         }
+
+        return $context;
     }
 
     protected function containerBoundCallable($callable)
