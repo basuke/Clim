@@ -61,7 +61,7 @@ class AppCest
 
         $app->task($this->task());
 
-        $I->executeAppAndGetOutput($app, "Hello world\n");
+        $I->assertOutputEquals($app, "Hello world\n");
     }
 
     public function appWithArgument(UnitTester $I)
@@ -74,7 +74,7 @@ class AppCest
 
         $app->task($this->task());
 
-        $I->executeAppAndGetOutput($app, "Hello Basuke\n");
+        $I->assertOutputEquals($app, "Hello Basuke\n");
     }
 
     public function appWithContainerBinding(UnitTester $I)
@@ -87,7 +87,7 @@ class AppCest
 
         $app->task($this->task());
 
-        $I->executeAppAndGetOutput($app, "Bye world\n");
+        $I->assertOutputEquals($app, "Bye world\n");
     }
 
     public function appWithSimpleOption(UnitTester $I)
@@ -102,7 +102,7 @@ class AppCest
 
         $app->task($this->task());
 
-        $I->executeAppAndGetOutput($app, "HELLO WORLD\n");
+        $I->assertOutputEquals($app, "HELLO WORLD\n");
     }
 
     public function appWithSimpleOptionButNotSpecified(UnitTester $I)
@@ -117,7 +117,7 @@ class AppCest
 
         $app->task($this->task());
 
-        $I->executeAppAndGetOutput($app, "Hello world\n");
+        $I->assertOutputEquals($app, "Hello world\n");
     }
 
     public function appWithManyOptions(UnitTester $I)
@@ -143,7 +143,7 @@ class AppCest
             echo "${result}\n";
         });
 
-        $I->executeAppAndGetOutput($app, "abcf\n");
+        $I->assertOutputEquals($app, "abcf\n");
     }
 
     public function appWithLongOption(UnitTester $I)
@@ -158,6 +158,6 @@ class AppCest
 
         $app->task($this->task());
 
-        $I->executeAppAndGetOutput($app, "hello world\n");
+        $I->assertOutputEquals($app, "hello world\n");
     }
 }

@@ -13,7 +13,7 @@ class Unit extends \Codeception\Module
         return ob_get_clean();
     }
 
-    public function executeAppAndGetOutput($app, $expected)
+    public function assertOutputEquals($app, $expected)
     {
         $output = $this->captureOutput(function () use ($app) {
             $app->run();
@@ -21,5 +21,11 @@ class Unit extends \Codeception\Module
 
         $asserts = $this->getModule('Asserts');
         $asserts->assertEquals($expected, $output);
+    }
+
+    public function willPassArguments($app, $argv)
+    {
+        $container = $app->getContainer();
+        $container['argv'] = $argv;
     }
 }

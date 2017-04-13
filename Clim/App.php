@@ -2,7 +2,6 @@
 
 namespace Clim;
 
-use \ArrayIterator;
 use \Closure;
 use \Psr\Container\ContainerInterface;
 
@@ -62,8 +61,11 @@ class App {
         return $parser;
     }
 
-    public function dispatch($option, $callable)
+    public function dispatch($meta_var, $children)
     {
+        $dispatcher = new Dispatcher($meta_var, $children, $this->getContainer());
+        $this->handlers[] = $dispatcher;
+        return $dispatcher;
     }
 
     public function task($callable)
@@ -73,8 +75,16 @@ class App {
 
     public function run()
     {
+        $argv = $this->getContainer()->get('argv');
+        $context = new Context(array_slice($argv, 1));
+
+        return $this->runWithContext($context);
+    }
+
+    public function runWithContext(Context $context)
+    {
         $runner = new Runner($this->parsers, $this->handlers);
-        $context = $runner->run($this->getContainer()->get('argv'));
+        $runner->run($context);
 
         if ($this->task) {
             call_user_func($this->task, new Collection($context->options()), new Collection($context->arguments()));

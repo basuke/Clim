@@ -24,15 +24,12 @@ class Runner
         $this->handlers = new Collection($handlers);
     }
 
-    public function run(array $argv)
+    public function run($context)
     {
-        $context = new Context(array_slice($argv, 1));
-        $this->runWithContext($context);
-        return $context;
-    }
+        if (is_array($context)) {
+            $context = new Context($context);
+        }
 
-    protected function runWithContext(Context $context)
-    {
         while ($context->hasNext()) {
             /** @var string $arg */
             $arg = $context->next();
@@ -56,6 +53,8 @@ class Runner
                 $this->parseLongOption(substr($arg, 2), $context);
             }
         }
+
+        return $context;
     }
 
     protected function parseShortOption($arg, Context $context)

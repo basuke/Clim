@@ -14,7 +14,7 @@ $app->dispatch('{command}', [
         $app->option('--force');
 
         $app->task(function ($context) {
-            echo "FOO\n";
+            echo "FOO{$context['age']}\n";
         });
     },
     'bar' => function ($app) {
@@ -24,15 +24,9 @@ $app->dispatch('{command}', [
     },
 ]);
 
-$output = $I->captureOutput(function () use($app) {
-    $container = $app->getContainer();
-    $container['argv'] = ['hello_dispatch', '--age=49', 'foo'];
-    // try {
-        $context = $app->run();
-        var_dump($context);
-    // } catch (\Exception $e) {
+$I->willPassArguments($app, ['hello_dispatch', '--age=49', 'foo']);
+$I->assertOutputEquals($app, "FOO49\n");
 
-    // }
-});
+$I->willPassArguments($app, ['hello_dispatch', 'bar']);
+$I->assertOutputEquals($app, "BAR\n");
 
-echo $output;
