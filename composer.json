@@ -27,8 +27,8 @@
     },
     "scripts": {
         "test": [
-            "@codecept"
+            "@run-unittest"
         ],
-        "codecept": "php vendor/bin/codecept"
+        "run-unittest": "codecept run unit"
     }
 }
