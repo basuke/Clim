@@ -12,6 +12,7 @@ $runner = new Runner([
     (new OptionParser('-b|--boo')),
     (new OptionParser('--case {CASE}')),
     (new OptionParser('-d|--do {ACTION}')),
+], [
 ]);
 
 $context = $runner->run(['program_name', 'hello', '-a', '--do', 'foo', 'bar']);

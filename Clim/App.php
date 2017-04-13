@@ -16,6 +16,9 @@ class App {
     /** @var array $parsers */
     private $parsers = [];
 
+    /** @var array $handlers */
+    private $handlers = [];
+
     /**
      * Constructor of Clim\App
      * @param ContainerInterface|array|null $container
@@ -70,7 +73,7 @@ class App {
 
     public function run()
     {
-        $runner = new Runner($this->parsers);
+        $runner = new Runner($this->parsers, $this->handlers);
         $context = $runner->run($this->getContainer()->get('argv'));
 
         if ($this->task) {

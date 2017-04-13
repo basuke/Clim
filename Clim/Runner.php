@@ -11,22 +11,27 @@ class Runner
     /** @var array $parsers */
     private $parsers = [];
 
+    /** @var array $handlers */
+    private $handlers = [];
+
     /**
      * @param OptionParser[] $parsers
+     * @param ArgumentHandler[] $handlers
      */
-    public function __construct(array $parsers)
+    public function __construct(array $parsers, array $handlers)
     {
         $this->parsers = $parsers;
+        $this->handlers = new Collection($handlers);
     }
 
     public function run(array $argv)
     {
         $context = new Context(array_slice($argv, 1));
-        $this->parseArguments($context);
+        $this->runWithContext($context);
         return $context;
     }
 
-    protected function parseArguments(Context $context)
+    protected function runWithContext(Context $context)
     {
         while ($context->hasNext()) {
             /** @var string $arg */
@@ -35,7 +40,15 @@ class Runner
             if ($arg == '--') break;
 
             if ($arg[0] != '-' || strlen($arg) <= 1) {
-                $context->push($arg);
+                /** @var ArgumentHandler */
+                $handler = $this->handlers->shift();
+
+                if ($handler) {
+                    $handled = $handler->handle($arg, $context);
+                    if ($handled) return;
+                } else {
+                    $context->push($arg);
+                }
             } elseif ($arg[1] != '-') {
                 // short option
                 $this->parseShortOption(substr($arg, 1), $context);
@@ -73,7 +86,8 @@ class Runner
     protected function parse($option, Context $context)
     {
         foreach ($this->parsers as /** @var OptionParser */ $parser) {
-            if ($parser->parse($option, $context)) return;
+            $parsed = $parser->parse($option, $context);
+            if ($parsed) return;
         }
 
         throw new OptionException();

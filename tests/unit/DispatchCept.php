@@ -34,6 +34,4 @@ $output = $I->captureOutput(function () use($app) {
     // }
 });
 
-var_dump($app);
-
 echo $output;
