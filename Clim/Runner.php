@@ -2,7 +2,7 @@
 
 namespace Clim;
 
-use \ArrayIterator;
+use \Clim\Exception\OptionException;
 use \Closure;
 use \Psr\Container\ContainerInterface;
 
@@ -64,9 +64,9 @@ class Runner
     protected function handle($option, $value, Context $context)
     {
         foreach ($this->handlers as /** @var Option $handler */ $handler) {
-            if ($handler->handle($option, $value, $context)) return true;
+            if ($handler->handle($option, $value, $context)) return;
         }
 
-        return false;
+        throw new OptionException();
     }
 }
