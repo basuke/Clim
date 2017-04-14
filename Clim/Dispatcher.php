@@ -37,7 +37,7 @@ class Dispatcher extends Handler
 
         call_user_func($builder, $child);
 
-        $child->runWith($context);
+        $child->runner()->run($context);
         return true;
     }
 }

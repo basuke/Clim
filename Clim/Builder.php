@@ -7,17 +7,17 @@ use \Psr\Container\ContainerInterface;
 
 class Builder
 {
-    /** @var ContainerInterface $container */
+    /** @var ContainerInterface */
     private $container;
 
-    /** @var Closure $task */
-    private $task;
-
-    /** @var array $parsers */
+    /** @var array */
     private $parsers = [];
 
-    /** @var array $handlers */
+    /** @var array */
     private $handlers = [];
+
+    /** @var array */
+    private $tasks = [];
 
     /**
      * Constructor of Clim\App
@@ -66,21 +66,12 @@ class Builder
 
     public function task($callable)
     {
-        $this->task = $this->containerBoundCallable($callable);
+        $this->tasks[] = $this->containerBoundCallable($callable);
     }
 
-    protected function runner()
+    public function runner()
     {
-        return new Runner($this->parsers, $this->handlers);
-    }
-
-    public function runWith(Context $context)
-    {
-        $this->runner()->run($context);
-
-        if ($this->task) {
-            call_user_func($this->task, new Collection($context->options()), new Collection($context->arguments()));
-        }
+        return new Runner($this->parsers, $this->handlers, $this->tasks);
     }
 
     protected function containerBoundCallable($callable)

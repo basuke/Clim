@@ -8,20 +8,24 @@ use \Psr\Container\ContainerInterface;
 
 class Runner
 {
-    /** @var array $parsers */
+    /** @var array */
     private $parsers = [];
 
-    /** @var array $handlers */
+    /** @var array */
     private $handlers = [];
+
+    /** @var array */
+    private $tasks = [];
 
     /**
      * @param OptionParser[] $parsers
      * @param ArgumentHandler[] $handlers
      */
-    public function __construct(array $parsers, array $handlers)
+    public function __construct(array $parsers, array $handlers, array $tasks = [])
     {
         $this->parsers = $parsers;
-        $this->handlers = new Collection($handlers);
+        $this->handlers = new Collection(array_slice($handlers, 0));
+        $this->tasks = $tasks;
     }
 
     public function run($context)
@@ -45,6 +49,14 @@ class Runner
                 $handled = $this->parseLongOption(substr($arg, 2), $context);
             }
             if ($handled) return;
+        }
+
+        foreach ($this->tasks as $task) {
+            call_user_func(
+                $task,
+                new Collection($context->options()),
+                new Collection($context->arguments())
+            );
         }
 
         return $context;
