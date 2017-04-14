@@ -1,7 +1,7 @@
 <?php
 
 $I = new UnitTester($scenario);
-$I->wantTo('perform dispatch and see result');
+$I->wantTo('perform dispatch and see the result');
 
 $app = new Clim\App();
 

@@ -33,11 +33,11 @@ class Dispatcher extends Handler
         }
 
         $builder = $this->children[$argument];
-        $child = new App($this->container);
+        $child = new Builder($this->container);
 
         call_user_func($builder, $child);
 
-        $child->runWithContext($context);
+        $child->run($context);
         return true;
     }
 }
