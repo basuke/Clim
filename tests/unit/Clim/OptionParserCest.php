@@ -96,7 +96,7 @@ class OptionParserCest
         $I->assertTrue($parser->parse('time', $context));
         $I->assertEquals($context->options()['time'], '365');
         $I->assertEquals($context->options()['t'], '365');
-        $I->assertFalse($context->hasNext());
+        $I->assertFalse($context->hasMore());
     }
 
     public function test9(UnitTester $I)

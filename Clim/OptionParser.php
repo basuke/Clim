@@ -20,7 +20,7 @@ class OptionParser extends Handler
             $value = $context->tentative();
 
             if (is_null($value)) {
-                $value = $context->hasNext() ? $context->next() : '';
+                $value = $context->hasMore() ? $context->next() : '';
             }
 
             if ($this->_pattern) {

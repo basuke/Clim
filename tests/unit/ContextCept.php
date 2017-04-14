@@ -8,9 +8,9 @@ $I->wantTo("define Context features");
 $context = new Context(['Hello', 'world']);
 $I->assertEquals($context->argv(), ['Hello', 'world']);
 $I->assertEquals($context->next(), 'Hello');
-$I->assertTrue($context->hasNext());
+$I->assertTrue($context->hasMore());
 $I->assertEquals($context->next(), 'world');
-$I->assertFalse($context->hasNext());
+$I->assertFalse($context->hasMore());
 $I->assertEquals($context->current(), 'world');
 $I->assertEquals($context->next(), null);
 

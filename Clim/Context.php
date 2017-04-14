@@ -37,7 +37,7 @@ class Context
         return $this->_current;
     }
 
-    public function hasNext()
+    public function hasMore()
     {
         return count($this->_argv) > 0;
     }

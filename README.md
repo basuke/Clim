@@ -21,7 +21,7 @@ require 'vendor/autoload.php';
 $app = new Clim\App();
 
 $app->opt('-u|--upper');
-$app->arg('name')->default('someone');
+$app->arg('name')->default('unknown');
 
 $app->task(function ($opts, $args) {
 	$name = $args['name'];

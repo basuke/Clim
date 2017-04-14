@@ -51,6 +51,16 @@ class Builder
     }
 
     /**
+     * Alias of option()
+     * @param string $option
+     * @param Closure|null $callable
+     */
+    public function opt($option, $callable = null)
+    {
+        return $this->option($option, $callable);
+    }
+
+    /**
      * @param string $name
      * @param Closure|null $callable
      */
@@ -61,6 +71,16 @@ class Builder
         $handler = new ArgumentHandler($name, $flags, $this->containerBoundCallable($callable));
         $this->handlers[] = $handler;
         return $handler;
+    }
+
+    /**
+     * Alias of argument()
+     * @param string $name
+     * @param Closure|null $callable
+     */
+    public function arg($name, $callable = null)
+    {
+        return $this->argument($name, $callable);
     }
 
     /**

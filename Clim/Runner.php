@@ -34,7 +34,7 @@ class Runner
             $context = new Context($context);
         }
 
-        while ($context->hasNext()) {
+        while ($context->hasMore()) {
             /** @var string $arg */
             $arg = $context->next();
 

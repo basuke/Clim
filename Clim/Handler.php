@@ -19,8 +19,11 @@ class Handler
     /** @var bool whether the definition is compiled or not */
     protected $_defined = false;
 
-    /** @var string $_description */
+    /** @var string */
     protected $_description = '';
+
+    /** @var mixed value */
+    protected $_default = null;
 
     /** @var string $_meta_var */
     protected $_meta_var = 'VALUE';
@@ -42,13 +45,22 @@ class Handler
 
     public function description($str = null)
     {
-        if (is_null($str)) {
-            return $this->_description;
-        } else {
-            $this->_description = $str;
-            return $this;
-        }
+        $this->_description = $str;
+        return $this;
     }
+
+    public function default($value = null)
+    {
+        $this->_default = $value;
+        return $this;
+    }
+
+    public function optional()
+    {
+        return $this->default('');
+    }
+
+    // -------------------------------------------------------------------------
 
     public function metaVar()
     {
