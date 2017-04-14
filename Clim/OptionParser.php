@@ -33,7 +33,7 @@ class OptionParser extends Handler
         }
 
         foreach ($this->options as $key) {
-            $context[$key] = $value;
+            $context->set($key, $value);
         }
         return true;
     }

@@ -16,10 +16,10 @@ $runner = new Runner([
 ]);
 
 $context = $runner->run(['hello', '-a', '--do', 'foo', 'bar']);
-$I->assertTrue($context['a']);
-$I->assertEquals($context[0], 'hello');
-$I->assertEquals($context[1], 'bar');
-$I->assertFalse(isset($context[3]));
+$I->assertEquals($context->arguments(), [
+    'hello',
+    'bar'
+]);
 $I->assertEquals($context->options(), [
     'a' => true,
     'd' => 'foo',
@@ -28,7 +28,7 @@ $I->assertEquals($context->options(), [
 $I->assertEquals($context->arguments(), ['hello', 'bar']);
 
 $context = $runner->run(['--case', '1234', '--boo']);
-$I->assertFalse(isset($context[0]));
+$I->assertEquals($context->arguments(), []);
 $I->assertEquals($context->options(), [
     'boo' => true,
     'b' => true,
@@ -45,6 +45,5 @@ $I->assertEquals($context->options(), [
     'd' => 'dance',
     'do' => 'dance',
 ]);
-$I->assertEquals($context[0], 'bingo');
 $I->assertEquals($context->arguments(), ['bingo']);
 

@@ -83,7 +83,7 @@ class OptionParserCest
 
         $context->tentative('42');
         $I->assertTrue($parser->parse('t', $context));
-        $I->assertEquals($context['t'], '42');
+        $I->assertEquals($context->options()['t'], '42');
     }
 
     public function test8(UnitTester $I)
@@ -94,8 +94,8 @@ class OptionParserCest
         $context = new Context(['365']);
 
         $I->assertTrue($parser->parse('time', $context));
-        $I->assertEquals($context['time'], '365');
-        $I->assertEquals($context['t'], '365');
+        $I->assertEquals($context->options()['time'], '365');
+        $I->assertEquals($context->options()['t'], '365');
         $I->assertFalse($context->hasNext());
     }
 

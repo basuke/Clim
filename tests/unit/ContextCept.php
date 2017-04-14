@@ -18,8 +18,8 @@ $context->push('foo');
 $context->push('bar');
 $I->assertEquals($context->arguments(), ['foo', 'bar']);
 
-$context['foo'] = 'bar';
-$context['f'] = 'bar';
+$context->set('foo', 'bar');
+$context->set('f', 'bar');
 $I->assertEquals($context->options(), ['foo' => 'bar', 'f' => 'bar']);
 
 

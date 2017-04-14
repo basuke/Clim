@@ -2,7 +2,7 @@
 
 namespace Clim;
 
-class Context implements \ArrayAccess
+class Context
 {
     /** @var array $_argv */
     protected $_argv;
@@ -10,7 +10,7 @@ class Context implements \ArrayAccess
     /** @var string $_current */
     protected $_current;
 
-    /** @var Collection $_options */
+    /** @var array */
     protected $_options;
 
     /** @var array $_arguments */
@@ -19,10 +19,10 @@ class Context implements \ArrayAccess
     /** @var string hold tentative value */
     protected $_tentative;
 
-    public function __construct(array $argv)
+    public function __construct(array $argv = [])
     {
         $this->_argv = $argv;
-        $this->_options = new Collection();
+        $this->_options = [];
         $this->_arguments = [];
     }
 
@@ -42,24 +42,41 @@ class Context implements \ArrayAccess
         return count($this->_argv) > 0;
     }
 
-    public function current()
-    {
-        return $this->_current;
-    }
-
-    public function push($value)
-    {
-        array_push($this->_arguments, $value);
-    }
-
     public function unshift($value)
     {
         array_unshift($this->_argv, $value);
     }
 
+    public function current()
+    {
+        return $this->_current;
+    }
+
+    public function push($value, $name = null, $append = false)
+    {
+        array_push($this->_arguments, $value);
+
+        if ($name) {
+            if ($append) {
+                if (isset($this->_arguments[$name])) {
+                    $this->_arguments[] = $value;
+                } else {
+                    $this->_arguments[$name] = [$value];
+                }
+            } else {
+                $this->_arguments[$name] = $value;
+            }
+        }
+    }
+
+    public function set($name, $value)
+    {
+        $this->_options[$name] = $value;
+    }
+
     public function options()
     {
-        return $this->_options->all();
+        return $this->_options;
     }
 
     public function arguments()
@@ -78,34 +95,5 @@ class Context implements \ArrayAccess
         } else {
             $this->_tentative = $value;
         }
-    }
-
-    protected function target($index)
-    {
-        return is_int($index) ? $this->_arguments : $this->_options;
-    }
-
-    public function offsetExists($index)
-    {
-        $array = $this->target($index);
-        return isset($array[$index]);
-    }
-
-    public function offsetGet($index)
-    {
-        $array = $this->target($index);
-        return $array[$index];
-    }
-
-    public function offsetSet($index, $value)
-    {
-        $array = $this->target($index);
-        $array[$index] = $value;
-    }
-
-    public function offsetUnset($index)
-    {
-        $array = $this->target($index);
-        unset($array[$index]);
     }
 }
