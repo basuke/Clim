@@ -28,6 +28,6 @@ class App extends Builder
         $argv = $this->getContainer()->get('argv');
         $context = new Context(array_slice($argv, 1));
 
-        parent::run($context);
+        $this->runWith($context);
     }
 }

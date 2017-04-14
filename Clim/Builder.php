@@ -74,7 +74,7 @@ class Builder
         return new Runner($this->parsers, $this->handlers);
     }
 
-    public function run(Context $context)
+    public function runWith(Context $context)
     {
         $this->runner()->run($context);
 
