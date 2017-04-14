@@ -39,7 +39,7 @@ class AppCest
     {
         $I->wantTo('check basic container interface');
 
-        $app = new App([
+        $app = $I->createAnApp([
             'hello' => 'world',
         ]);
 
@@ -53,7 +53,7 @@ class AppCest
     {
         $I->wantTo('test output of simple hello_world');
 
-        $app = new App();
+        $app = $I->createAnApp();
 
         // $app->option("-h|--help", function(array $options, array $args) {
 
@@ -68,7 +68,7 @@ class AppCest
     {
         $I->wantTo('test output of hello_world with argument');
 
-        $app = new App([
+        $app = $I->createAnApp([
             'argv' => ['hello_world', 'Basuke'],
         ]);
 
@@ -81,7 +81,7 @@ class AppCest
     {
         $I->wantTo('test container binding with closure');
 
-        $app = new App([
+        $app = $I->createAnApp([
             'greeting' => 'Bye',
         ]);
 
@@ -94,7 +94,7 @@ class AppCest
     {
         $I->wantTo('test simple app with option specified');
 
-        $app = new App([
+        $app = $I->createAnApp([
             'argv' => ['hello_world', '-u'],
         ]);
 
@@ -109,7 +109,7 @@ class AppCest
     {
         $I->wantTo('test simple app which has option but not specified');
 
-        $app = new App([
+        $app = $I->createAnApp([
             'argv' => ['hello_world'],
         ]);
 
@@ -124,7 +124,7 @@ class AppCest
     {
         $I->wantTo('test app which has simple many options');
 
-        $app = new App([
+        $app = $I->createAnApp([
             'argv' => ['hello_world', '-c', '-f', '-a', '-b'],
         ]);
 
@@ -150,7 +150,7 @@ class AppCest
     {
         $I->wantTo('test simple app which has option but not specified');
 
-        $app = new App([
+        $app = $I->createAnApp([
             'argv' => ['hello_world', '--lower'],
         ]);
 

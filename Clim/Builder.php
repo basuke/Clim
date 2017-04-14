@@ -45,13 +45,22 @@ class Builder
     {
         $flags = 0;
 
-        if (is_null($callable)) {
-            $flags |= Option::TYPE_BOOL;
-        }
-
         $parser = new OptionParser($option, $flags, $this->containerBoundCallable($callable));
         $this->parsers[] = $parser;
         return $parser;
+    }
+
+    /**
+     * @param string $name
+     * @param Closure|null $callable
+     */
+    public function argument($name, $callable = null)
+    {
+        $flags = 0;
+
+        $handler = new ArgumentHandler($name, $flags, $this->containerBoundCallable($callable));
+        $this->handlers[] = $handler;
+        return $handler;
     }
 
     /**

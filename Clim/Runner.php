@@ -51,6 +51,10 @@ class Runner
             if ($handled) return;
         }
 
+        foreach ($this->handlers as $handler) {
+            $handler->handle($context->next(), $context);
+        }
+
         foreach ($this->tasks as $task) {
             call_user_func(
                 $task,
