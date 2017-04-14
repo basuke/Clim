@@ -53,11 +53,7 @@ class AppCest
     {
         $I->wantTo('test output of simple hello_world');
 
-        $app = $I->createAnApp();
-
-        // $app->option("-h|--help", function(array $options, array $args) {
-
-        // })->description('Display help page');
+        $app = new App();
 
         $app->task($this->task());
 
@@ -81,7 +77,7 @@ class AppCest
     {
         $I->wantTo('test container binding with closure');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'greeting' => 'Bye',
         ]);
 

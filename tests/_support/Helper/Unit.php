@@ -13,16 +13,17 @@ class Unit extends \Codeception\Module
         return ob_get_clean();
     }
 
-    public function createAnApp($config = [])
+    public function createAnApp(array $config = [])
     {
         $container = new \Slim\Container($config);
         return new \Clim\Builder($container);
     }
 
-    public function assertOutputEquals($app, $expected)
+    public function assertOutputEquals(\Clim\Builder $app, $expected)
     {
         $output = $this->captureOutput(function () use ($app) {
-            $app->run();
+            $argv = $app->getContainer()->get('argv');
+            $app->runner()->run(array_slice($argv, 1));
         });
 
         $asserts = $this->getModule('Asserts');
