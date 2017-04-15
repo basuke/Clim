@@ -43,21 +43,36 @@ class Handler
         $this->callable = $callable;
     }
 
-    public function description($str = null)
+    /**
+     * set description
+     * @param string $str
+     * @return Handler return itself for chaining
+     */
+    public function description($str)
     {
         $this->_description = $str;
         return $this;
     }
 
-    public function default($value = null)
+    /**
+     * set default value
+     * @alias default
+     * @param mixed value $value
+     * @return Handler return itself for chaining
+     */
+    public function defaultValue($value)
     {
         $this->_default = $value;
         return $this;
     }
 
+    /**
+     * set the argument optional by setting default value to ''
+     * @return Handler return itself for chaining
+     */
     public function optional()
     {
-        return $this->default('');
+        return $this->defaultValue('');
     }
 
     // -------------------------------------------------------------------------
@@ -109,5 +124,12 @@ class Handler
 
     protected function evaluateNote($str)
     {
+    }
+
+    use Traits\MethodAlias;
+
+    public function alias__default($value)
+    {
+        return $this->defaultValue($value);
     }
 }
