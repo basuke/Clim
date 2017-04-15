@@ -1,9 +1,9 @@
 {
-    "name": "basuke/clim",
+    "name": "climphp/clim",
     "type": "library",
     "description": "Clim is a PHP micro framework that helps you quickly write simple yet powerful command line applications",
     "keywords": ["framework","micro","cli"],
-    "homepage": "https://basuke.com/clim",
+    "homepage": "https://github.com/climphp/Clim",
     "license": "MIT",
     "authors": [
         {
