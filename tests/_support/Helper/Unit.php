@@ -22,8 +22,12 @@ class Unit extends \Codeception\Module
     public function assertOutputEquals(\Clim\Builder $app, $expected)
     {
         $output = $this->captureOutput(function () use ($app) {
-            $argv = $app->getContainer()->get('argv');
-            $app->runner()->run(array_slice($argv, 1));
+            if ($app instanceof \Clim\App) {
+                $app->run();
+            } else {
+                $argv = $app->getContainer()->get('argv');
+                $app->runner()->run(array_slice($argv, 1));
+            }
         });
 
         $asserts = $this->getModule('Asserts');

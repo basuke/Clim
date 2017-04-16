@@ -156,4 +156,16 @@ class AppCest
 
         $I->assertOutputEquals($app, "hello world\n");
     }
+
+    public function ifExceptionHappens(UnitTester $I)
+    {
+        $I->wantTo('test error case. Exception should be handled by App.');
+
+        $app = new App(['argv' => ['hello_world']]);
+        $app->task(function ($opt, $arg) {
+            throw new \Exception("Bad thing", 123);
+        });
+
+        $I->assertOutputEquals($app, "Error occured. Bad thing\n");
+    }
 }
