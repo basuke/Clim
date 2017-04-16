@@ -2,7 +2,7 @@
 
 require dirname(__DIR__). '/vendor/autoload.php';
 
-$container = new Slim\Container([
+$container = new \Clim\Container([
     'quiet' => false
 ]);
 

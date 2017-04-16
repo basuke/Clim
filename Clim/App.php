@@ -13,11 +13,7 @@ class App extends Builder
     public function __construct($container = null)
     {
         if (!is_a($container, '\Psr\Container\ContainerInterface')) {
-            $container = new \Slim\Container((array) $container);
-        }
-
-        if (!$container->has('argv')) {
-            $container['argv'] = $_SERVER['argv'];
+            $container = new Container((array) $container);
         }
 
         parent::__construct($container);

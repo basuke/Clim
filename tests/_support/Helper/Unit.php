@@ -15,7 +15,7 @@ class Unit extends \Codeception\Module
 
     public function createAnApp(array $config = [])
     {
-        $container = new \Slim\Container($config);
+        $container = new \Clim\Container($config);
         return new \Clim\Builder($container);
     }
 
