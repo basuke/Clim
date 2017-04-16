@@ -35,7 +35,7 @@ $I->assertFalse($parser->match('hello'));
 $parser = new OptionParser('-k {VALUE}');
 
 $I->assertTrue($parser->needValue());
-$I->assertEquals($parser->metaVar(), 'VALUE');
+$I->assertEquals('VALUE', $parser->metaVar());
 
 // ============================================
 // see the parser matches with mixed option with value
@@ -43,7 +43,7 @@ $I->assertEquals($parser->metaVar(), 'VALUE');
 $parser = new OptionParser('-t|--time {TIME_STR}');
 
 $I->assertTrue($parser->needValue());
-$I->assertEquals($parser->metaVar(), 'TIME_STR');
+$I->assertEquals('TIME_STR', $parser->metaVar());
 
 // ============================================
 // see the parser works with option with
@@ -53,8 +53,8 @@ $parser = new OptionParser('-t|--time {TIME_STR}');
 $context = new Context(['today', 'tomorrow']);
 
 $I->assertTrue($parser->parse('t', $context));
-$I->assertEquals($context->options()['time'], 'today');
-$I->assertEquals($context->next(), 'tomorrow');
+$I->assertEquals('today', $context->options()['time']);
+$I->assertEquals('tomorrow', $context->next());
 
 // ============================================
 // see the parser works with option with
@@ -65,8 +65,8 @@ $context = new Context(['should_not_be_used']);
 
 $context->tentative('42');
 $I->assertTrue($parser->parse('t', $context));
-$I->assertEquals($context->options()['t'], '42');
-$I->assertEquals($context->next(), 'should_not_be_used');
+$I->assertEquals('42', $context->options()['t']);
+$I->assertEquals('should_not_be_used', $context->next());
 
 // ============================================
 // see parser works even if there is no more
@@ -79,7 +79,7 @@ $I->assertTrue($parser->parse('time', $context));
 
 $value = $context->options()['time'];
 $I->assertTrue(is_string($value));
-$I->assertEquals($value, '');
+$I->assertEquals('', $value);
 
 // ============================================
 // see the parser works with option with value and pattern
@@ -103,3 +103,18 @@ $I->expectException(
     function () use ($parser) {
         $parser->metaVar(); // causes definition parsing
     });
+
+// ============================================
+// see option default works
+
+$parser = (new OptionParser('-t|--time {TIME_STR}'))
+                ->default('today');
+$context = new Context([]);
+
+$parser->collectDefaultValue($context);
+
+$I->assertEquals([
+    't' => 'today',
+    'time' => 'today',
+], $context->options());
+

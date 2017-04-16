@@ -38,6 +38,19 @@ class OptionParser extends Handler
         return true;
     }
 
+    public function collectDefaultValue(Context $context)
+    {
+        if (!is_null($this->_default)) {
+            $this->needDefined();
+
+            foreach ($this->options as $key) {
+                if (!$context->has($key)) {
+                    $context->set($key, $this->_default);
+                }
+            }
+        }
+    }
+
     public function match($option)
     {
         $this->needDefined();

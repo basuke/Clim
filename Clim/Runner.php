@@ -34,6 +34,8 @@ class Runner
             $context = new Context($context);
         }
 
+        $this->collectDefaultOptions($context);
+
         while ($context->hasMore()) {
             /** @var string $arg */
             $arg = $context->next();
@@ -115,5 +117,12 @@ class Runner
         }
 
         throw new OptionException("unknown option");
+    }
+
+    protected function collectDefaultOptions(Context $context)
+    {
+        foreach ($this->parsers as $parser) {
+            $parser->collectDefaultValue($context);
+        }
     }
 }

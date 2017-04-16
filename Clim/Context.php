@@ -69,6 +69,11 @@ class Context
         }
     }
 
+    public function has($name)
+    {
+        return isset($this->_options[$name]);
+    }
+
     public function set($name, $value)
     {
         $this->_options[$name] = $value;
