@@ -128,8 +128,5 @@ class Handler
 
     use Traits\MethodAlias;
 
-    public function alias__default($value)
-    {
-        return $this->defaultValue($value);
-    }
+    protected $alias__default = 'defaultValue';
 }

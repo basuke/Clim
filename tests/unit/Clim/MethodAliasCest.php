@@ -12,10 +12,7 @@ class Hello
         return str_repeat('hi', $count);
     }
 
-    public function alias__konnichiwa($count)
-    {
-        return $this->hello($count);
-    }
+    protected $alias__konnichiwa = 'hello';
 }
 
 class MethodAliasCest

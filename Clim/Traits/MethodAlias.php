@@ -8,8 +8,8 @@ trait MethodAlias
     {
         $alias = 'alias__'. $name;
 
-        if (is_callable([$this, $alias])) {
-            return call_user_func_array([$this, $alias], $args);
+        if (isset($this->{$alias}) && $this->{$alias}) {
+            return call_user_func_array([$this, $this->{$alias}], $args);
         } else {
             throw new \BadMethodCallException("Not a valid method: {$name}");
         }
