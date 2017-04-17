@@ -23,8 +23,8 @@ class OptionParser extends Handler
                 $value = $context->hasMore() ? $context->next() : '';
             }
 
-            if ($this->_pattern) {
-                if (!preg_match($this->_pattern, $value)) {
+            if ($this->pattern) {
+                if (!preg_match($this->pattern, $value)) {
                     throw new Exception\OptionException("pattern does't match");
                 }
             }
@@ -40,12 +40,12 @@ class OptionParser extends Handler
 
     public function collectDefaultValue(Context $context)
     {
-        if (!is_null($this->_default)) {
+        if (!is_null($this->default)) {
             $this->needDefined();
 
             foreach ($this->options as $key) {
                 if (!$context->has($key)) {
-                    $context->set($key, $this->_default);
+                    $context->set($key, $this->default);
                 }
             }
         }

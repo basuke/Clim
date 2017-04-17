@@ -5,7 +5,7 @@ namespace Clim;
 class Handler
 {
     /** @const string */
-    const definition_parser = '/ \\s* (.+) \\s* \\{ \\s* (.*) \\s* \\} \\s* (.*) \\s* /x';
+    const DEFINITION_PARSER = '/ \\s* (.+) \\s* \\{ \\s* (.*) \\s* \\} \\s* (.*) \\s* /x';
 
     /** @var string $definition */
     protected $definition;
@@ -17,19 +17,19 @@ class Handler
     protected $callable;
 
     /** @var bool whether the definition is compiled or not */
-    protected $_defined = false;
+    protected $defined = false;
 
     /** @var string */
-    protected $_description = '';
+    protected $description = '';
 
     /** @var mixed value */
-    protected $_default = null;
+    protected $default = null;
 
-    /** @var string $_meta_var */
-    protected $_meta_var = 'VALUE';
+    /** @var string $meta_var */
+    protected $meta_var = 'VALUE';
 
-    /** @var string $_pattern */
-    protected $_pattern;
+    /** @var string $pattern */
+    protected $pattern;
 
     /**
      * @param string $definition
@@ -50,19 +50,19 @@ class Handler
      */
     public function description($str)
     {
-        $this->_description = $str;
+        $this->description = $str;
         return $this;
     }
 
     /**
      * set default value
      * @alias default
-     * @param mixed value $value
+     * @param mixed $value
      * @return Handler return itself for chaining
      */
     public function defaultValue($value)
     {
-        $this->_default = $value;
+        $this->default = $value;
         return $this;
     }
 
@@ -80,16 +80,16 @@ class Handler
     public function metaVar()
     {
         $this->needDefined();
-        return $this->_meta_var;
+        return $this->meta_var;
     }
 
     public function needDefined()
     {
-        if ($this->_defined) return;
-        $this->_defined = true;
+        if ($this->defined) return;
+        $this->defined = true;
 
 
-        if (preg_match(self::definition_parser, $this->definition, $matches)) {
+        if (preg_match(self::DEFINITION_PARSER, $this->definition, $matches)) {
             $this->evaluateBody($matches[1]);
             $this->evaluateMeta($matches[2]);
             $this->evaluateNote($matches[3]);
@@ -108,16 +108,16 @@ class Handler
         if ($pos !== false) {
             $this->evaluatePattern(trim(substr($meta_var, $pos + 1)));
 
-            $this->_meta_var = trim(substr($meta_var, 0, $pos));
+            $this->meta_var = trim(substr($meta_var, 0, $pos));
         } else {
-            $this->_meta_var = trim($meta_var);
+            $this->meta_var = trim($meta_var);
         }
     }
 
     protected function evaluatePattern($pattern)
     {
-        $this->_pattern = '/^'. str_replace('/', '\\/', $pattern). '$/';
-        if (@preg_match($this->_pattern, null) === false) {
+        $this->pattern = '/^'. str_replace('/', '\\/', $pattern). '$/';
+        if (@preg_match($this->pattern, null) === false) {
             throw new Exception\DefinitionException("invalid regular expression pattern");
         }
     }

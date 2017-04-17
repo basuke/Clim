@@ -7,11 +7,11 @@ class ArgumentHandler extends Handler
     public function handle($argument, Context $context)
     {
         if (is_null($argument) || strlen($argument) == 0) {
-            if (is_null($this->_default)) {
+            if (is_null($this->default)) {
                 throw new Exception\ArgumentRequiredException($this->metaVar());
             }
 
-            $argument = $this->_default;
+            $argument = $this->default;
         }
 
         $context->push($argument, $this->metaVar());
@@ -19,6 +19,6 @@ class ArgumentHandler extends Handler
 
     protected function evaluateBody($str)
     {
-        $this->_meta_var = trim($str);
+        $this->meta_var = trim($str);
     }
 }
