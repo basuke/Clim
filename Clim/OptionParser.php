@@ -2,17 +2,22 @@
 
 namespace Clim;
 
+use Clim\Cli\Component;
+use Clim\Exception\OptionException;
 use Clim\Helper\DeferredDefinitionTrait;
 
-class OptionParser extends Handler
+class OptionParser extends Component
 {
     use DeferredDefinitionTrait;
 
     /** @var array $options */
     protected $options = [];
 
-    /** @var bool $_need_value */
-    protected $_need_value = false;
+    /** @var bool $need_value */
+    protected $need_value = false;
+
+    /** @var string $pattern */
+    protected $pattern;
 
     /**
      * @param string $definition
@@ -32,7 +37,7 @@ class OptionParser extends Handler
 
         if (!$this->match($option)) return false;
 
-        if ($this->_need_value) {
+        if ($this->need_value) {
             $value = $context->tentative();
 
             if (is_null($value)) {
@@ -41,7 +46,7 @@ class OptionParser extends Handler
 
             if ($this->pattern) {
                 if (!preg_match($this->pattern, $value)) {
-                    throw new Exception\OptionException("pattern does't match");
+                    throw new OptionException("pattern does't match");
                 }
             }
         } else {
@@ -76,38 +81,29 @@ class OptionParser extends Handler
     public function needValue()
     {
         $this->needDefined();
-        return $this->_need_value;
+        return $this->need_value;
     }
 
     protected function define($body, $name, $pattern, $note)
     {
-        if ($body) $this->evaluateBody($body);
-        if ($name) $this->evaluateMeta($name);
-        if ($pattern) $this->evaluatePattern($pattern);
-    }
+        if ($body) {
+            foreach (explode('|', $body) as $def) {
+                $def = trim($def);
+                if (strlen($def) == 0) continue;
 
-    protected function evaluateBody($str)
-    {
-        foreach (explode('|', $str) as $def) {
-            $def = trim($def);
-            if (strlen($def) == 0) continue;
-
-            if (substr($def, 0, 2) == '--') {
-                $this->options[] = substr($def, 2);
-            } elseif (substr($def, 0, 1) == '-') {
-                $this->options[] = substr($def, 1);
+                if (substr($def, 0, 2) == '--') {
+                    $this->options[] = substr($def, 2);
+                } elseif (substr($def, 0, 1) == '-') {
+                    $this->options[] = substr($def, 1);
+                }
             }
         }
-    }
 
-    protected function evaluateMeta($meta_var)
-    {
-        $this->_need_value = true;
-        $this->meta_var = $meta_var;
-    }
+        if ($name) {
+            $this->need_value = true;
+            $this->meta_var = $name;
+        }
 
-    protected function evaluatePattern($str)
-    {
-        $this->pattern = $str;
+        $this->pattern = $pattern;
     }
 }

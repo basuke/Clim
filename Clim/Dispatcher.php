@@ -2,10 +2,11 @@
 
 namespace Clim;
 
+use Clim\Cli\Component;
 use Clim\Helper\DeferredDefinitionTrait;
-use \Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 
-class Dispatcher extends Handler
+class Dispatcher extends Component
 {
     use DeferredDefinitionTrait;
 
@@ -46,26 +47,8 @@ class Dispatcher extends Handler
         return true;
     }
 
-
     protected function define($body, $name, $pattern, $note)
     {
-        if ($body) $this->evaluateBody($body);
-        if ($name) $this->evaluateMeta($name);
-        if ($pattern) $this->evaluatePattern($pattern);
+        $this->meta_var = $name;
     }
-
-    protected function evaluateBody($str)
-    {
-    }
-
-    protected function evaluateMeta($str)
-    {
-        $this->meta_var = $str;
-    }
-
-    protected function evaluatePattern($str)
-    {
-        $this->pattern = $str;
-    }
-
 }

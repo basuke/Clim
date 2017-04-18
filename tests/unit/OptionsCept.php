@@ -97,11 +97,12 @@ $I->expectException(
 // detect invalid regular expression error
 
 $parser = new OptionParser('-t {TIME_STR|[abc}'); // "[abc" is invalid regex
+$context = new Context(['123']);
 
 $I->expectException(
     \Clim\Exception\DefinitionException::class,
-    function () use ($parser) {
-        $parser->metaVar(); // causes definition parsing
+    function () use ($parser, $context) {
+        $parser->parse('t', $context);
     });
 
 // ============================================

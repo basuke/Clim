@@ -2,9 +2,10 @@
 
 namespace Clim;
 
+use Clim\Cli\Component;
 use Clim\Helper\DeferredDefinitionTrait;
 
-class ArgumentHandler extends Handler
+class ArgumentHandler extends Component
 {
     use DeferredDefinitionTrait;
 
@@ -22,6 +23,8 @@ class ArgumentHandler extends Handler
 
     public function handle($argument, Context $context)
     {
+        $this->needDefined();
+
         if (is_null($argument) || strlen($argument) == 0) {
             if (is_null($this->default)) {
                 throw new Exception\ArgumentRequiredException($this->metaVar());
@@ -35,8 +38,6 @@ class ArgumentHandler extends Handler
 
     protected function define($body, $name, $pattern, $note)
     {
-        if ($body) $this->meta_var = $body;
-        if ($name) $this->meta_var = $name;
-        if ($pattern) $this->pattern = $pattern;
+        $this->meta_var = $body ?: $name;
     }
 }
