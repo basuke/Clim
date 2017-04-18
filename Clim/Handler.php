@@ -126,7 +126,7 @@ class Handler
     {
     }
 
-    use Traits\MethodAlias;
+    use Helper\MethodAliasTrait;
 
-    protected $alias__default = 'defaultValue';
+    protected $alias_of_default = 'defaultValue';
 }

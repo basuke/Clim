@@ -1,18 +1,19 @@
 <?php
 namespace Clim;
-use \UnitTester;
-use \Clim\Traits\MethodAlias;
+
+use UnitTester;
+use Clim\Helper\MethodAliasTrait;
 
 class Hello
 {
-    use MethodAlias;
+    use MethodAliasTrait;
 
     public function hello($count)
     {
         return str_repeat('hi', $count);
     }
 
-    protected $alias__konnichiwa = 'hello';
+    protected $alias_of_konnichiwa = 'hello';
 }
 
 class MethodAliasCest
