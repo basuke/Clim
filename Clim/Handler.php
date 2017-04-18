@@ -4,20 +4,11 @@ namespace Clim;
 
 class Handler
 {
-    /** @const string */
-    const DEFINITION_PARSER = '/ \\s* (.+) \\s* \\{ \\s* (.*) \\s* \\} \\s* (.*) \\s* /x';
-
-    /** @var string $definition */
-    protected $definition;
-
     /** @var null $flags */
     protected $flags;
 
     /** @var \Closure $callable */
     protected $callable;
-
-    /** @var bool whether the definition is compiled or not */
-    protected $defined = false;
 
     /** @var string */
     protected $description = '';
@@ -36,9 +27,8 @@ class Handler
      * @param int $flags
      * @param \Closure|null $callable
      */
-    public function __construct($definition, $flags = 0, $callable = null)
+    public function __construct($flags = 0, $callable = null)
     {
-        $this->definition = $definition;
         $this->flags = $flags;
         $this->callable = $callable;
     }
@@ -82,7 +72,7 @@ class Handler
         $this->needDefined();
         return $this->meta_var;
     }
-
+/*
     public function needDefined()
     {
         if ($this->defined) return;
@@ -125,7 +115,7 @@ class Handler
     protected function evaluateNote($str)
     {
     }
-
+*/
     use Helper\MethodAliasTrait;
 
     protected $alias_of_default = 'defaultValue';

@@ -2,10 +2,13 @@
 
 namespace Clim;
 
+use Clim\Helper\DeferredDefinitionTrait;
 use \Psr\Container\ContainerInterface;
 
 class Dispatcher extends Handler
 {
+    use DeferredDefinitionTrait;
+
     /** @var array */
     protected $children = [];
 
@@ -18,7 +21,9 @@ class Dispatcher extends Handler
      */
     public function __construct($definition, array $children, ContainerInterface $container)
     {
-        parent::__construct($definition);
+        $this->definition = $definition;
+
+        parent::__construct();
 
         $this->children = $children;
         $this->container = $container;
@@ -40,4 +45,27 @@ class Dispatcher extends Handler
         $child->runner()->run($context);
         return true;
     }
+
+
+    protected function define($body, $name, $pattern, $note)
+    {
+        if ($body) $this->evaluateBody($body);
+        if ($name) $this->evaluateMeta($name);
+        if ($pattern) $this->evaluatePattern($pattern);
+    }
+
+    protected function evaluateBody($str)
+    {
+    }
+
+    protected function evaluateMeta($str)
+    {
+        $this->meta_var = $str;
+    }
+
+    protected function evaluatePattern($str)
+    {
+        $this->pattern = $str;
+    }
+
 }

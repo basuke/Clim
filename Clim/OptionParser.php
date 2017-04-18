@@ -2,13 +2,29 @@
 
 namespace Clim;
 
+use Clim\Helper\DeferredDefinitionTrait;
+
 class OptionParser extends Handler
 {
+    use DeferredDefinitionTrait;
+
     /** @var array $options */
     protected $options = [];
 
     /** @var bool $_need_value */
     protected $_need_value = false;
+
+    /**
+     * @param string $definition
+     * @param int $flags
+     * @param \Closure|null $callable
+     */
+    public function __construct($definition, $flags = 0, $callable = null)
+    {
+        $this->definition = $definition;
+
+        parent::__construct($flags, $callable);
+    }
 
     public function parse($option, Context $context)
     {
@@ -63,6 +79,13 @@ class OptionParser extends Handler
         return $this->_need_value;
     }
 
+    protected function define($body, $name, $pattern, $note)
+    {
+        if ($body) $this->evaluateBody($body);
+        if ($name) $this->evaluateMeta($name);
+        if ($pattern) $this->evaluatePattern($pattern);
+    }
+
     protected function evaluateBody($str)
     {
         foreach (explode('|', $str) as $def) {
@@ -80,6 +103,11 @@ class OptionParser extends Handler
     protected function evaluateMeta($meta_var)
     {
         $this->_need_value = true;
-        parent::evaluateMeta($meta_var);
+        $this->meta_var = $meta_var;
+    }
+
+    protected function evaluatePattern($str)
+    {
+        $this->pattern = $str;
     }
 }
