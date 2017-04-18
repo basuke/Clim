@@ -12,7 +12,6 @@ $app->task(function ($opts, $args) {
 
     if ($opts['u']) $name = strtoupper($name);
 
-    throw new \Exception("Bad thing");
     echo "Welcome, {$name}\n";
 });
 
