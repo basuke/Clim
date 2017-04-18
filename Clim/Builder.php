@@ -2,8 +2,9 @@
 
 namespace Clim;
 
-use \Closure;
-use \Psr\Container\ContainerInterface;
+use Clim\Middleware\MiddlewareStack;
+use Closure;
+use Psr\Container\ContainerInterface;
 
 class Builder
 {
@@ -19,6 +20,9 @@ class Builder
     /** @var array */
     private $tasks = [];
 
+    /** @var MiddlewareStack */
+    private $task_middleware;
+
     /**
      * Constructor of Clim\App
      * @param ContainerInterface $container
@@ -26,6 +30,7 @@ class Builder
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->task_middleware = new MiddlewareStack();
     }
 
     /**
@@ -100,7 +105,11 @@ class Builder
 
     public function runner()
     {
-        return new Runner($this->parsers, $this->handlers, $this->tasks);
+        return new Runner(
+            $this->parsers,
+            $this->handlers,
+            $this->tasks,
+            $this->task_middleware);
     }
 
     protected function containerBoundCallable($callable)
@@ -109,5 +118,12 @@ class Builder
             $callable = $callable->bindTo($this->container);
         }
         return $callable;
+    }
+
+    protected function validateMiddlewareContext(ContextInterface $context)
+    {
+            if ($result instanceof ContextInterface === false) {
+                $context->setOutput($context);
+            }
     }
 }

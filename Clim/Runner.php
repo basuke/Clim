@@ -2,9 +2,10 @@
 
 namespace Clim;
 
-use \Clim\Exception\OptionException;
-use \Closure;
-use \Psr\Container\ContainerInterface;
+use Clim\Exception\OptionException;
+use Clim\Middleware\MiddlewareStack;
+use Closure;
+use Psr\Container\ContainerInterface;
 
 class Runner
 {
@@ -17,15 +18,23 @@ class Runner
     /** @var array */
     private $tasks = [];
 
+    /** @var MiddlewareStack */
+    private $task_middleware;
+
     /**
      * @param OptionParser[] $parsers
      * @param ArgumentHandler[] $handlers
      */
-    public function __construct(array $parsers, array $handlers, array $tasks = [])
-    {
+    public function __construct(
+        array $parsers,
+        array $handlers,
+        array $tasks = [],
+        $task_middleware = null
+    ) {
         $this->parsers = $parsers;
         $this->handlers = new Collection(array_slice($handlers, 0));
         $this->tasks = $tasks;
+        $this->task_middleware = $task_middleware ?: new MiddlewareStack();
     }
 
     public function run($context)
@@ -57,15 +66,16 @@ class Runner
             $handler->handle($context->next(), $context);
         }
 
-        foreach ($this->tasks as $task) {
-            call_user_func(
-                $task,
-                new Collection($context->options()),
-                new Collection($context->arguments())
-            );
-        }
+        return $this->task_middleware->run($context, function ($context) {
+            $options = new Collection($context->options());
+            $arguments = new Collection($context->arguments());
 
-        return $context;
+            foreach ($this->tasks as $task) {
+                call_user_func($task, $options, $arguments);
+            }
+
+            return $context;
+        });
     }
 
     protected function handleArgument($arg, Context $context)

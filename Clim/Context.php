@@ -2,7 +2,9 @@
 
 namespace Clim;
 
-class Context
+use Clim\Middleware\ContextInterface as MiddlewareContextInterface;
+
+class Context implements MiddlewareContextInterface
 {
     /** @var array $_argv */
     protected $_argv;
@@ -18,6 +20,12 @@ class Context
 
     /** @var string hold tentative value */
     protected $_tentative;
+
+    /**
+     * hold result
+     * @var string
+     */
+    protected $result;
 
     public function __construct(array $argv = [])
     {
@@ -100,5 +108,15 @@ class Context
         } else {
             $this->_tentative = $value;
         }
+    }
+
+    public function getResult()
+    {
+        return $this->result;
+    }
+
+    public function setResult($result)
+    {
+        $this->result = $result;
     }
 }
