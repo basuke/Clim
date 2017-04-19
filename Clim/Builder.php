@@ -11,17 +11,8 @@ class Builder
     /** @var ContainerInterface */
     private $container;
 
-    /** @var array */
-    private $parsers = [];
-
-    /** @var array */
-    private $handlers = [];
-
-    /** @var array */
-    private $tasks = [];
-
-    /** @var MiddlewareStack */
-    private $task_middleware;
+    /** @var Runner */
+    private $runner;
 
     /**
      * Constructor of Clim\App
@@ -30,7 +21,7 @@ class Builder
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->task_middleware = new MiddlewareStack();
+        $this->runner = new Runner();
     }
 
     /**
@@ -51,7 +42,7 @@ class Builder
         $flags = 0;
 
         $parser = new OptionParser($option, $flags, $this->containerBoundCallable($callable));
-        $this->parsers[] = $parser;
+        $this->runner->addOption($parser);
         return $parser;
     }
 
@@ -74,7 +65,7 @@ class Builder
         $flags = 0;
 
         $handler = new ArgumentHandler($name, $flags, $this->containerBoundCallable($callable));
-        $this->handlers[] = $handler;
+        $this->runner->addArgument($handler);
         return $handler;
     }
 
@@ -94,22 +85,18 @@ class Builder
     public function dispatch($meta_var, $children)
     {
         $dispatcher = new Dispatcher($meta_var, $children, $this->getContainer());
-        $this->handlers[] = $dispatcher;
+        $this->runner->addArgument($dispatcher);
         return $dispatcher;
     }
 
     public function task($callable)
     {
-        $this->tasks[] = $this->containerBoundCallable($callable);
+        $this->runner->addTask($this->containerBoundCallable($callable));
     }
 
     public function runner()
     {
-        return new Runner(
-            $this->parsers,
-            $this->handlers,
-            $this->tasks,
-            $this->task_middleware);
+        return $this->runner;
     }
 
     protected function containerBoundCallable($callable)

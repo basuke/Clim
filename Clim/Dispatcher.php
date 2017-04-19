@@ -2,11 +2,12 @@
 
 namespace Clim;
 
+use Clim\Cli\ArgumentInterface;
 use Clim\Cli\Component;
 use Clim\Helper\DeferredDefinitionTrait;
 use Psr\Container\ContainerInterface;
 
-class Dispatcher extends Component
+class Dispatcher extends Component implements ArgumentInterface
 {
     use DeferredDefinitionTrait;
 

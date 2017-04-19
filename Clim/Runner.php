@@ -2,6 +2,8 @@
 
 namespace Clim;
 
+use ArrayIterator;
+use Clim\Cli\ArgumentInterface;
 use Clim\Exception\OptionException;
 use Clim\Middleware\MiddlewareStack;
 use Closure;
@@ -21,20 +23,39 @@ class Runner
     /** @var MiddlewareStack */
     private $task_middleware;
 
+    /** @var array */
+    private $running_arguments;
+
     /**
      * @param OptionParser[] $parsers
      * @param ArgumentHandler[] $handlers
      */
-    public function __construct(
-        array $parsers,
-        array $handlers,
-        array $tasks = [],
-        $task_middleware = null
-    ) {
+    public function __construct(array $parsers = [], array $handlers = [])
+    {
+        $this->task_middleware = new MiddlewareStack();
+
         $this->parsers = $parsers;
-        $this->handlers = new Collection(array_slice($handlers, 0));
-        $this->tasks = $tasks;
-        $this->task_middleware = $task_middleware ?: new MiddlewareStack();
+        $this->handlers = $handlers;
+    }
+
+    public function addOption(OptionParser $option)
+    {
+        $this->parsers[] = $option;
+    }
+
+    public function addArgument(ArgumentInterface $argument)
+    {
+        $this->handlers[] = $argument;
+    }
+
+    public function addTask(callable $task)
+    {
+        $this->tasks[] = $task;
+    }
+
+    public function addMiddleware(callable $middleware)
+    {
+        $this->task_middleware->add($middleware);
     }
 
     public function run($context)
@@ -42,6 +63,8 @@ class Runner
         if (is_array($context)) {
             $context = new Context($context);
         }
+
+        $this->running_arguments = array_slice($this->handlers, 0);
 
         $this->collectDefaultOptions($context);
 
@@ -62,7 +85,7 @@ class Runner
             if ($handled) return;
         }
 
-        foreach ($this->handlers as $handler) {
+        foreach ($this->running_arguments as $handler) {
             $handler->handle($context->next(), $context);
         }
 
@@ -81,7 +104,7 @@ class Runner
     protected function handleArgument($arg, Context $context)
     {
         /** @var ArgumentHandler */
-        $handler = $this->handlers->shift();
+        $handler = array_shift($this->running_arguments);
 
         if ($handler) {
             return $handler->handle($arg, $context);
