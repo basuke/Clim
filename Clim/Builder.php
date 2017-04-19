@@ -89,6 +89,12 @@ class Builder
         return $dispatcher;
     }
 
+    public function add(callable $callable)
+    {
+        $this->runner->pushMiddleware($callable);
+        return $this;
+    }
+
     public function task($callable)
     {
         $this->runner->addTask($this->containerBoundCallable($callable));

@@ -157,6 +157,26 @@ class AppCest
         $I->assertOutputEquals($app, "hello world\n");
     }
 
+    public function appWithMiddleware(UnitTester $I)
+    {
+        $I->wantTo('test simple app which has option but not specified');
+
+        $app = $I->createAnApp([
+            'argv' => ['hello_world', '--lower'],
+        ])->add(function ($context, $next) {
+            echo "Before\n";
+            $next($context);
+            echo "After\n";
+            return $context;
+        });
+
+        $app->option('--lower');
+
+        $app->task($this->task());
+
+        $I->assertOutputEquals($app, "Before\nhello world\nAfter\n");
+    }
+
     public function ifExceptionHappens(UnitTester $I)
     {
         $I->wantTo('test error case. Exception should be handled by App.');

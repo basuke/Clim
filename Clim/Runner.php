@@ -53,9 +53,9 @@ class Runner
         $this->tasks[] = $task;
     }
 
-    public function addMiddleware(callable $middleware)
+    public function pushMiddleware(callable $middleware)
     {
-        $this->task_middleware->add($middleware);
+        $this->task_middleware->push($middleware);
     }
 
     public function run($context)
