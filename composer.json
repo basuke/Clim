@@ -29,7 +29,7 @@
         "test": [
             "@unittest"
         ],
-        "unittest": "codecept run unit --silent",
+        "unittest": "codecept run unit",
         "codecept": "codecept",
         "cest": "codecept generate:cest unit",
         "cept": "codecept generate:cept unit"

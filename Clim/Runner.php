@@ -4,6 +4,7 @@ namespace Clim;
 
 use Clim\Cli\ArgumentInterface;
 use Clim\Cli\Parameters;
+use Clim\Cli\Spec;
 use Clim\Exception\OptionException;
 use Clim\Middleware\MiddlewareStack;
 use Slim\Collection;
@@ -13,59 +14,26 @@ class Runner
     /** @var App */
     protected $app;
 
+    /** @var Spec */
+    private $spec;
+
     /** @var Parameters */
     protected $parameters;
-
-    /** @var array */
-    private $options = [];
-
-    /** @var array */
-    private $arguments = [];
-
-    /** @var array */
-    private $tasks = [];
-
-    /** @var MiddlewareStack */
-    private $task_middleware;
 
     /** @var array */
     private $running_arguments;
 
     /**
-     * @param Option[] $options
-     * @param ArgumentInterface[] $arguments
+     * @param Spec $spec
      */
-    public function __construct(array $options = [], array $arguments = [])
+    public function __construct(Spec $spec)
     {
-        $this->task_middleware = new MiddlewareStack();
-
-        $this->options = $options;
-        $this->arguments = $arguments;
+        $this->spec = $spec;
     }
 
     public function setApp(App $app)
     {
         $this->app = $app;
-    }
-
-    public function addOption(Option $option)
-    {
-        $this->options[] = $option;
-    }
-
-    public function addArgument(ArgumentInterface $argument)
-    {
-        $this->arguments[] = $argument;
-    }
-
-    public function addTask(callable $task)
-    {
-        $this->tasks[] = $task;
-    }
-
-    public function pushMiddleware(callable $middleware)
-    {
-        $this->task_middleware->push($middleware);
     }
 
     public function run($context)
@@ -78,13 +46,13 @@ class Runner
 
         if ($this->app) $context->setApp($this->app);
 
-        return $this->task_middleware->run($context, function (Context $context) {
+        return $this->spec->taskMiddleware()->run($context, function (Context $context) {
             if ($this->parse($context)) return $context;
 
             $options = new Collection($context->options());
             $arguments = new Collection($context->arguments());
 
-            foreach ($this->tasks as $task) {
+            foreach ($this->spec->tasks() as $task) {
                 call_user_func($task, $options, $arguments);
             }
 
@@ -94,7 +62,7 @@ class Runner
 
     protected function parse(Context $context)
     {
-        $this->running_arguments = array_slice($this->arguments, 0);
+        $this->running_arguments = array_slice($this->spec->arguments(), 0);
 
         $this->collectDefaultOptions($context);
 
@@ -166,7 +134,7 @@ class Runner
 
     protected function parseOption($value, Context $context)
     {
-        foreach ($this->options as /** @var Option */ $option) {
+        foreach ($this->spec->options() as /** @var Option */ $option) {
             $parsed = $option->parse($value, $context, $this->parameters);
             if ($parsed) return;
         }
@@ -176,7 +144,7 @@ class Runner
 
     protected function collectDefaultOptions(Context $context)
     {
-        foreach ($this->options as $option) {
+        foreach ($this->spec->options() as $option) {
             $option->collectDefaultValue($context);
         }
     }

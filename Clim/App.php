@@ -2,6 +2,7 @@
 
 namespace Clim;
 
+use Clim\Cli\Spec;
 use Closure;
 use Exception;
 use Psr\Container\ContainerInterface;
@@ -13,8 +14,8 @@ class App
     /** @var ContainerInterface */
     private $container;
 
-    /** @var Runner */
-    private $runner;
+    /** @var Spec */
+    private $spec;
 
     /**
      * Constructor of Clim\App
@@ -28,8 +29,7 @@ class App
 
         $this->container = $container;
 
-        $this->runner = new Runner();
-        $this->runner->setApp($this);
+        $this->spec = new Spec();
     }
 
     /**
@@ -51,7 +51,7 @@ class App
         $flags = 0;
 
         $option = new Option($option, $flags, $this->containerBoundCallable($callable));
-        $this->runner->addOption($option);
+        $this->spec->addOption($option);
         return $option;
     }
 
@@ -76,7 +76,7 @@ class App
         $flags = 0;
 
         $argument = new Argument($name, $flags, $this->containerBoundCallable($callable));
-        $this->runner->addArgument($argument);
+        $this->spec->addArgument($argument);
         return $argument;
     }
 
@@ -99,7 +99,7 @@ class App
     public function dispatch($meta_var, $children)
     {
         $dispatcher = new Dispatcher($meta_var, $children, $this->getContainer());
-        $this->runner->addArgument($dispatcher);
+        $this->spec->addArgument($dispatcher);
         return $dispatcher;
     }
 
@@ -112,7 +112,7 @@ class App
      */
     public function add($middleware)
     {
-        $this->runner->pushMiddleware($this->containerBoundCallable($middleware));
+        $this->spec->pushMiddleware($this->containerBoundCallable($middleware));
         return $this;
     }
 
@@ -121,7 +121,7 @@ class App
      */
     public function task($callable)
     {
-        $this->runner->addTask($this->containerBoundCallable($callable));
+        $this->spec->addTask($this->containerBoundCallable($callable));
     }
 
     /**
@@ -129,24 +129,28 @@ class App
      */
     public function runner()
     {
-        return $this->runner;
+        $runner = new Runner($this->spec);
+        $runner->setApp($this);
+        return $runner;
     }
 
     /**
-     * @return Context
+     * @return Context|null
      */
     public function run()
     {
-        $context = $this->getContainer()->get('context');
-
         try {
-            $this->runner()->run($context);
+            /** @var array $argv */
+            $argv = $this->getContainer()->get('argv');
+            /** @@var Context $context */
+            $context = $this->runner()->run($argv);
+            return $context;
         } catch (Exception $e) {
-            $context = $this->handleException($e, $context);
+            $this->handleException($e);
         } catch (Throwable $e) {
-            $context = $this->handlePhpError($e, $context);
+            $this->handlePhpError($e);
         }
-        return $context;
+        return null;
     }
 
     /**
@@ -154,11 +158,10 @@ class App
      * then just print error
      *
      * @param  Exception $e
-     * @param  Context $context
      *
      * @return Context
      */
-    protected function handleException(Exception $e, Context $context)
+    protected function handleException(Exception $e)
     {
         // if ($e instanceof MethodNotAllowedException) {
         //     $handler = 'notAllowedHandler';
@@ -172,7 +175,7 @@ class App
         // } else {
             // Other exception, use $request and $response params
             $handler = 'errorHandler';
-            $params = [$context, $e];
+            $params = [$e];
         // }
 
         if ($this->getContainer()->has($handler)) {
@@ -191,13 +194,12 @@ class App
      * then just re-throw.
      *
      * @param  Throwable $e
-     * @param  Context $context
      * @return Context
      */
-    protected function handlePhpError(Throwable $e, Context $context)
+    protected function handlePhpError(Throwable $e)
     {
         $handler = 'phpErrorHandler';
-        $params = [$context, $e];
+        $params = [$e];
 
         if ($this->getContainer()->has($handler)) {
             $callable = $this->getContainer()->get($handler);
