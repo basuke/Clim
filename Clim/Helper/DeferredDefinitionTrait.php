@@ -68,7 +68,9 @@ trait DeferredDefinitionTrait
 
     /**
      * Validate the regular expression pattern string
+     * @param string $pattern
      * @return string|null
+     * @throws DefinitionException
      */
     protected function assertPattern($pattern)
     {

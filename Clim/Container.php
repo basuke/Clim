@@ -56,7 +56,7 @@ class Container extends PimpleContainer implements ContainerInterface
         }
 
         if (!$this->has('context')) {
-            $this['context'] = function ($c) {
+            $this['context'] = function (ContainerInterface $c) {
                 $argv = $c->get('argv');
                 $context = new Context(array_slice($argv, 1));
                 return $context;
@@ -67,12 +67,12 @@ class Container extends PimpleContainer implements ContainerInterface
             /**
              * Instance of \Slim\Interfaces\CallableResolverInterface
              *
-             * @param Container $this
+             * @param ContainerInterface $c
              *
-             * @return CallableResolverInterface
+             * @return CallableResolver
              */
-            $this['callableResolver'] = function ($container) {
-                return new CallableResolver($container);
+            $this['callableResolver'] = function (ContainerInterface $c) {
+                return new CallableResolver($c);
             };
         }
     }
@@ -138,11 +138,6 @@ class Container extends PimpleContainer implements ContainerInterface
     {
         return $this->offsetExists($id);
     }
-
-
-    /********************************************************************************
-     * Magic methods for convenience
-     *******************************************************************************/
 
     public function __get($name)
     {

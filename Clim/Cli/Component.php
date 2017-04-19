@@ -18,7 +18,6 @@ class Component
     protected $meta_var = 'VALUE';
 
     /**
-     * @param string $definition
      * @param int $flags
      * @param \Closure|null $callable
      */
@@ -53,7 +52,7 @@ class Component
 
     /**
      * set the argument optional by setting default value to ''
-     * @return CliComponentTrait return itself for chaining
+     * @return static return itself for chaining
      */
     public function optional()
     {

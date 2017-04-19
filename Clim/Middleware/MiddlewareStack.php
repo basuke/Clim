@@ -97,6 +97,7 @@ class MiddlewareStack
      */
     protected function validateResult($result)
     {
+        return null;
     }
 
     /**
@@ -104,7 +105,7 @@ class MiddlewareStack
      * exceptions in this method if result is not valid.
      *
      * @param  ContextInterface $context A context object
-     *
+     * @param  mixed $result
      * @return ContextInterface|null
      */
     protected function handleResult(ContextInterface $context, $result)

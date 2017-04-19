@@ -1,7 +1,6 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: basuke
  * Date: 4/19/17
  * Time: 12:53 PM
  */
@@ -48,6 +47,7 @@ class Parameters
             return $value;
         } else {
             $this->_tentative = $value;
+            return null;
         }
     }
 }
