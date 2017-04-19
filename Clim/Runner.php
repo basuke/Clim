@@ -2,12 +2,12 @@
 
 namespace Clim;
 
-use ArrayIterator;
 use Clim\Cli\ArgumentInterface;
 use Clim\Exception\OptionException;
 use Clim\Middleware\MiddlewareStack;
 use Closure;
 use Psr\Container\ContainerInterface;
+use Slim\Collection;
 
 class Runner
 {
