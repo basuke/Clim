@@ -5,6 +5,7 @@ namespace Clim;
 use Clim\Middleware\MiddlewareStack;
 use Closure;
 use Psr\Container\ContainerInterface;
+use Slim\DeferredCallable;
 
 class Builder
 {
@@ -89,6 +90,10 @@ class Builder
         return $dispatcher;
     }
 
+    /**
+     *
+     * @since 1.1.0
+     */
     public function add(callable $callable)
     {
         $this->runner->pushMiddleware($this->containerBoundCallable($callable));
@@ -107,10 +112,12 @@ class Builder
 
     protected function containerBoundCallable($callable)
     {
-        if ($callable instanceof Closure) {
-            $callable = $callable->bindTo($this->container);
-        }
-        return $callable;
+        if (is_null($callable)) return null;
+
+        // if ($callable instanceof Closure) {
+        //     $callable = $callable->bindTo($this->container);
+        // }
+        return new DeferredCallable($callable, $this->container);
     }
 
     protected function validateMiddlewareContext(ContextInterface $context)
