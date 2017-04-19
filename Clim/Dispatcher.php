@@ -19,7 +19,7 @@ class Dispatcher extends Component implements ArgumentInterface
 
     /**
      * @param string $definition
-     * @param arrat $children
+     * @param array $children
      */
     public function __construct($definition, array $children, ContainerInterface $container)
     {

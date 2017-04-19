@@ -38,10 +38,10 @@ class Option extends Component
         if (!$this->match($option)) return false;
 
         if ($this->need_value) {
-            $value = $context->tentative();
+            $value = $context->parameters->tentative();
 
             if (is_null($value)) {
-                $value = $context->hasMore() ? $context->next() : '';
+                $value = $context->parameters->hasMore() ? $context->parameters->next() : '';
             }
 
             if ($this->pattern) {

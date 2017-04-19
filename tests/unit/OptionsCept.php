@@ -54,7 +54,7 @@ $context = new Context(['today', 'tomorrow']);
 
 $I->assertTrue($option->parse('t', $context));
 $I->assertEquals('today', $context->options()['time']);
-$I->assertEquals('tomorrow', $context->next());
+$I->assertEquals('tomorrow', $context->parameters->next());
 
 // ============================================
 // see the option works with option with
@@ -63,10 +63,10 @@ $I->assertEquals('tomorrow', $context->next());
 $option = new Option('-t|--time {TIME_STR}');
 $context = new Context(['should_not_be_used']);
 
-$context->tentative('42');
+$context->parameters->tentative('42');
 $I->assertTrue($option->parse('t', $context));
 $I->assertEquals('42', $context->options()['t']);
-$I->assertEquals('should_not_be_used', $context->next());
+$I->assertEquals('should_not_be_used', $context->parameters->next());
 
 // ============================================
 // see option works even if there is no more
