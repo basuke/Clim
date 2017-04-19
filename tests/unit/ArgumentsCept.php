@@ -10,9 +10,10 @@ $I->wantTo('define how ArgumentParser works');
 // ============================================
 
 $argument = new Argument('arg1');
+$parameters = new \Clim\Cli\Parameters([]);
 $context = new Context();
 
-$argument->handle('hello', $context);
+$argument->handle('hello', $parameters, $context);
 
 $I->assertEquals($argument->metaVar(), 'arg1');
 $I->assertEquals($context->arguments(), [

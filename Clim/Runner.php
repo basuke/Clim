@@ -36,18 +36,26 @@ class Runner
         $this->app = $app;
     }
 
-    public function run($context)
+    /**
+     * @param array $argv
+     * @param Context|null $context
+     * @return Middleware\ContextInterface
+     */
+    public function run($argv, Context $context = null)
     {
-        if (is_array($context)) {
-            $context = new Context($context);
+        $this->parameters = new parameters($argv);
+        if (is_null($context)) {
+            $context = new Context();
         }
-
-        $this->parameters = $context->parameters;
 
         if ($this->app) $context->setApp($this->app);
 
         return $this->spec->taskMiddleware()->run($context, function (Context $context) {
             if ($this->parse($context)) return $context;
+
+            while ($this->parameters->hasMore()) {
+                $context->push($this->parameters->next());
+            }
 
             $options = new Collection($context->options());
             $arguments = new Collection($context->arguments());
@@ -84,7 +92,7 @@ class Runner
         }
 
         foreach ($this->running_arguments as $argument) {
-            $argument->handle($this->parameters->next(), $context);
+            $argument->handle($this->parameters->next(), $this->parameters, $context);
         }
 
         return false;
@@ -96,7 +104,7 @@ class Runner
         $argument = array_shift($this->running_arguments);
 
         if ($argument) {
-            return $argument->handle($arg, $context);
+            return $argument->handle($arg, $this->parameters, $context);
         } else {
             $context->push($arg);
             return false;
@@ -135,7 +143,7 @@ class Runner
     protected function parseOption($value, Context $context)
     {
         foreach ($this->spec->options() as /** @var Option */ $option) {
-            $parsed = $option->parse($value, $context, $this->parameters);
+            $parsed = $option->parse($value, $this->parameters, $context);
             if ($parsed) return;
         }
 

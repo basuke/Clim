@@ -6,5 +6,5 @@ use Clim\Context;
 
 interface ArgumentInterface
 {
-    public function handle($argument, Context $context);
+    public function handle($argument, Parameters $parameter, Context $context);
 }

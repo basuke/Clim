@@ -7,9 +7,6 @@ use Clim\Middleware\ContextInterface as MiddlewareContextInterface;
 
 class Context implements MiddlewareContextInterface
 {
-    /** @var \Clim\Cli\Parameters */
-    public $parameters;
-
     /** @var array */
     protected $_options;
 
@@ -25,9 +22,8 @@ class Context implements MiddlewareContextInterface
      */
     protected $result;
 
-    public function __construct(array $argv = [])
+    public function __construct()
     {
-        $this->parameters = new Parameters($argv);
         $this->_options = [];
         $this->_arguments = [];
     }
@@ -66,7 +62,7 @@ class Context implements MiddlewareContextInterface
 
     public function arguments()
     {
-        return array_merge($this->_arguments, $this->parameters->argv());
+        return $this->_arguments;
     }
 
     public function getApp()

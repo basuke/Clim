@@ -32,7 +32,7 @@ class Option extends Component
         parent::__construct($flags, $callable);
     }
 
-    public function parse($option, Context $context, Parameters $parameters)
+    public function parse($option, Parameters $parameters, Context $context)
     {
         $this->needDefined();
 

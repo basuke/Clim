@@ -4,6 +4,7 @@ namespace Clim;
 
 use Clim\Cli\ArgumentInterface;
 use Clim\Cli\Component;
+use Clim\Cli\Parameters;
 use Clim\Helper\DeferredDefinitionTrait;
 use Psr\Container\ContainerInterface;
 
@@ -32,12 +33,12 @@ class Dispatcher extends Component implements ArgumentInterface
         $this->container = $container;
     }
 
-    public function handle($argument, Context $context)
+    public function handle($argument, Parameters $parameters, Context $context)
     {
         $this->needDefined();
 
         if (!array_key_exists($argument, $this->children)) {
-            throw new \Exception("invalid subcommand");
+            throw new \Exception("invalid sub command");
         }
 
         $builder = $this->children[$argument];
@@ -45,7 +46,7 @@ class Dispatcher extends Component implements ArgumentInterface
 
         call_user_func($builder, $child);
 
-        $child->runner()->run($context);
+        $child->runner()->run($parameters->argv(), $context);
         return true;
     }
 
