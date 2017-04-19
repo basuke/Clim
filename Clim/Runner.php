@@ -3,6 +3,7 @@
 namespace Clim;
 
 use Clim\Cli\ArgumentInterface;
+use Clim\Cli\Parameters;
 use Clim\Exception\OptionException;
 use Clim\Middleware\MiddlewareStack;
 use Slim\Collection;
@@ -11,6 +12,9 @@ class Runner
 {
     /** @var App */
     protected $app;
+
+    /** @var Parameters */
+    protected $parameters;
 
     /** @var array */
     private $options = [];
@@ -70,9 +74,11 @@ class Runner
             $context = new Context($context);
         }
 
+        $this->parameters = $context->parameters;
+
         if ($this->app) $context->setApp($this->app);
 
-        return $this->task_middleware->run($context, function ($context) {
+        return $this->task_middleware->run($context, function (Context $context) {
             if ($this->parse($context)) return $context;
 
             $options = new Collection($context->options());
@@ -92,9 +98,9 @@ class Runner
 
         $this->collectDefaultOptions($context);
 
-        while ($context->parameters->hasMore()) {
+        while ($this->parameters->hasMore()) {
             /** @var string $arg */
-            $arg = $context->parameters->next();
+            $arg = $this->parameters->next();
 
             if ($arg == '--') break;
 
@@ -110,7 +116,7 @@ class Runner
         }
 
         foreach ($this->running_arguments as $argument) {
-            $argument->handle($context->parameters->next(), $context);
+            $argument->handle($this->parameters->next(), $context);
         }
 
         return false;
@@ -135,9 +141,9 @@ class Runner
             $value = $arg[0];
             $arg = strlen($arg) > 1 ? substr($arg, 1) : null;
 
-            $context->parameters->tentative($arg);
+            $this->parameters->tentative($arg);
             $this->parseOption($value, $context);
-            $arg = $context->parameters->tentative();
+            $arg = $this->parameters->tentative();
         }
     }
 
@@ -147,13 +153,13 @@ class Runner
         $pos = strpos($value, '=');
 
         if ($pos !== false) {
-            $context->parameters->tentative(substr($value, $pos + 1));
+            $this->parameters->tentative(substr($value, $pos + 1));
             $value = substr($value, 0, $pos);
         }
 
         $this->parseOption($value, $context);
 
-        if (!is_null($context->parameters->tentative())) {
+        if (!is_null($this->parameters->tentative())) {
             throw new Exception\OptionException("value is not needed");
         }
     }
@@ -161,7 +167,7 @@ class Runner
     protected function parseOption($value, Context $context)
     {
         foreach ($this->options as /** @var Option */ $option) {
-            $parsed = $option->parse($value, $context, $context->parameters);
+            $parsed = $option->parse($value, $context, $this->parameters);
             if ($parsed) return;
         }
 
