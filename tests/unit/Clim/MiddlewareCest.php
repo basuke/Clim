@@ -14,6 +14,24 @@ class MiddlewareCest
             '<kernel>'
         ], $stack->run($context, new Kernel())->getResult());
     }
+
+    public function checkOneMiddleware(UnitTester $I)
+    {
+        $stack = new MiddlewareStack();
+        $stack->push(function ($context, $next) {
+            $context->setResult('<hello>');
+            $context = $next($context);
+            $context->setResult('<bye>');
+            return $context;
+        });
+        $context = new MiddlewareContext();
+
+        $I->assertEquals([
+            '<hello>',
+            '<kernel>',
+            '<bye>',
+        ], $stack->run($context, new Kernel())->getResult());
+    }
 }
 
 class Kernel

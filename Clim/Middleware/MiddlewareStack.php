@@ -34,22 +34,21 @@ class MiddlewareStack
      * @param callable $callable Any callable that accepts two arguments:
      *                           1. A ContextInterface object
      *                           2. A "next" middleware callable
-     * @return static
      *
      * @throws RuntimeException         If middleware is added while the stack is dequeuing
      * @throws UnexpectedValueException If the middleware doesn't return a ContextInterface
      */
-    protected function push(callable $callable)
+    public function push(callable $callable)
     {
         if ($this->kernel) {
             throw new RuntimeException('Middleware can’t be added once the stack is dequeuing');
         }
 
         if (is_null($this->head)) {
-            $callable = function (ContextInterface $context) {
-                return $this->kernel($context);
+            $next = function (ContextInterface $context) {
+                $result = call_user_func($this->kernel, $context);
+                return $this->handleResult($context, $result);
             };
-            $next = null;
         } else {
             $next = $this->head;
         }
@@ -59,9 +58,8 @@ class MiddlewareStack
             $next
         ) {
             $result = call_user_func($callable, $context, $next);
+            return $this->handleResult($context, $result);
         };
-
-        return $this;
     }
 
     /**
