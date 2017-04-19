@@ -21,6 +21,9 @@ class Context implements MiddlewareContextInterface
     /** @var string hold tentative value */
     protected $_tentative;
 
+    /** @var Builder */
+    protected $app;
+
     /**
      * hold result
      * @var string
@@ -108,6 +111,16 @@ class Context implements MiddlewareContextInterface
         } else {
             $this->_tentative = $value;
         }
+    }
+
+    public function getApp()
+    {
+        return $this->app;
+    }
+
+    public function setApp(Builder $app)
+    {
+        $this->app = $app;
     }
 
     public function getResult()

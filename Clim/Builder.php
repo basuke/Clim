@@ -22,7 +22,9 @@ class Builder
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+
         $this->runner = new Runner();
+        $this->runner->setApp($this);
     }
 
     /**
@@ -94,7 +96,7 @@ class Builder
      *
      * @since 1.1.0
      */
-    public function add(callable $callable)
+    public function add($callable)
     {
         $this->runner->pushMiddleware($this->containerBoundCallable($callable));
         return $this;

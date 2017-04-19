@@ -11,6 +11,9 @@ use Slim\Collection;
 
 class Runner
 {
+    /** @var Builder */
+    protected $app;
+
     /** @var array */
     private $options = [];
 
@@ -38,6 +41,11 @@ class Runner
         $this->arguments = $arguments;
     }
 
+    public function setApp(Builder $app)
+    {
+        $this->app = $app;
+    }
+
     public function addOption(Option $option)
     {
         $this->options[] = $option;
@@ -63,6 +71,8 @@ class Runner
         if (is_array($context)) {
             $context = new Context($context);
         }
+
+        if ($this->app) $context->setApp($this->app);
 
         return $this->task_middleware->run($context, function ($context) {
             if ($this->parse($context)) return $context;
