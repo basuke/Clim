@@ -21,7 +21,7 @@ class Context implements MiddlewareContextInterface
     /** @var string hold tentative value */
     protected $_tentative;
 
-    /** @var Builder */
+    /** @var App */
     protected $app;
 
     /**
@@ -118,7 +118,7 @@ class Context implements MiddlewareContextInterface
         return $this->app;
     }
 
-    public function setApp(Builder $app)
+    public function setApp(App $app)
     {
         $this->app = $app;
     }

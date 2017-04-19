@@ -5,6 +5,7 @@ namespace Clim;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Pimple\Container as PimpleContainer;
+use Slim\CallableResolver;
 use Slim\Collection;
 use Slim\Exception\ContainerValueNotFoundException;
 use Slim\Exception\ContainerException as SlimContainerException;
@@ -54,6 +55,14 @@ class Container extends PimpleContainer implements ContainerInterface
             $this['argv'] = $_SERVER['argv'];
         }
 
+        if (!$this->has('context')) {
+            $this['context'] = function ($c) {
+                $argv = $c->get('argv');
+                $context = new Context(array_slice($argv, 1));
+                return $context;
+            };
+        }
+
         if (!$this->has('callableResolver')) {
             /**
              * Instance of \Slim\Interfaces\CallableResolverInterface
@@ -63,7 +72,7 @@ class Container extends PimpleContainer implements ContainerInterface
              * @return CallableResolverInterface
              */
             $this['callableResolver'] = function ($container) {
-                return new \Slim\CallableResolver($container);
+                return new CallableResolver($container);
             };
         }
     }

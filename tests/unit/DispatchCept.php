@@ -1,5 +1,7 @@
 <?php
 
+use Clim\App;
+
 $I = new UnitTester($scenario);
 $I->wantTo('perform dispatch and see the result');
 
@@ -9,7 +11,7 @@ $app = new Clim\App(['name' => 'Kashiyuka']);
 $app->option('--age {AGE|\\d+}');
 
 $app->dispatch('{command}', [
-    'foo' => function ($app) {
+    'foo' => function (App $app) {
         // available only for foo
         $app->option('--force');
 
@@ -19,7 +21,7 @@ $app->dispatch('{command}', [
             echo "FOO {$context['age']}-{$this->name}\n";
         });
     },
-    'bar' => function ($app) {
+    'bar' => function (App $app) {
         $app->task(function ($context) {
             echo "BAR\n";
         });

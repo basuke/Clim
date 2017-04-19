@@ -177,7 +177,7 @@ class AppCest
         $I->assertOutputEquals($app, "Before\nhello world\nAfter\n");
     }
 
-    public function accessWithContainerFromMiddleware(UnitTester $I)
+    public function accessToContainerFromMiddleware(UnitTester $I)
     {
         $container = new \Clim\Container([
             'argv' => ['hello_world'],
@@ -205,6 +205,9 @@ class AppCest
             throw new \Exception("Bad thing", 123);
         });
 
-        $I->assertOutputEquals($app, "Error occured. Bad thing\n");
+        $I->expectException(\Exception::class, function () use ($app) {
+            $context = $app->getContainer()->get('context');
+            $app->runner()->run($context);
+        });
     }
 }

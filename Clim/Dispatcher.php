@@ -36,11 +36,11 @@ class Dispatcher extends Component implements ArgumentInterface
         $this->needDefined();
 
         if (!array_key_exists($argument, $this->children)) {
-            throw new Exception("invalid subcommand");
+            throw new \Exception("invalid subcommand");
         }
 
         $builder = $this->children[$argument];
-        $child = new Builder($this->container);
+        $child = new App($this->container);
 
         call_user_func($builder, $child);
 

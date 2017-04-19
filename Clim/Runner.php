@@ -11,7 +11,7 @@ use Slim\Collection;
 
 class Runner
 {
-    /** @var Builder */
+    /** @var App */
     protected $app;
 
     /** @var array */
@@ -41,7 +41,7 @@ class Runner
         $this->arguments = $arguments;
     }
 
-    public function setApp(Builder $app)
+    public function setApp(App $app)
     {
         $this->app = $app;
     }

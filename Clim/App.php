@@ -2,29 +2,142 @@
 
 namespace Clim;
 
+use Closure;
 use Exception;
 use Psr\Container\ContainerInterface;
+use Slim\DeferredCallable;
 use Throwable;
 
-class App extends Builder
+class App
 {
+    /** @var ContainerInterface */
+    private $container;
+
+    /** @var Runner */
+    private $runner;
+
     /**
      * Constructor of Clim\App
      * @param ContainerInterface|array|null $container
      */
     public function __construct($container = null)
     {
-        if (!($container instanceof \Psr\Container\ContainerInterface)) {
+        if (!($container instanceof ContainerInterface)) {
             $container = new Container((array) $container);
         }
 
-        parent::__construct($container);
+        $this->container = $container;
+
+        $this->runner = new Runner();
+        $this->runner->setApp($this);
     }
 
+    /**
+     * return application container
+     * @return ContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * @param string $option
+     * @param Closure|null $callable
+     * @return Option
+     */
+    public function option($option, $callable = null)
+    {
+        $flags = 0;
+
+        $option = new Option($option, $flags, $this->containerBoundCallable($callable));
+        $this->runner->addOption($option);
+        return $option;
+    }
+
+    /**
+     * Alias of option()
+     * @param string $option
+     * @param Closure|null $callable
+     * @return Option
+     */
+    public function opt($option, $callable = null)
+    {
+        return $this->option($option, $callable);
+    }
+
+    /**
+     * @param string $name
+     * @param Closure|null $callable
+     * @return Argument
+     */
+    public function argument($name, $callable = null)
+    {
+        $flags = 0;
+
+        $argument = new Argument($name, $flags, $this->containerBoundCallable($callable));
+        $this->runner->addArgument($argument);
+        return $argument;
+    }
+
+    /**
+     * Alias of argument()
+     * @param string $name
+     * @param Closure|null $callable
+     * @return Argument
+     */
+    public function arg($name, $callable = null)
+    {
+        return $this->argument($name, $callable);
+    }
+
+    /**
+     * @param string $meta_var
+     * @param array $children Definition of child apps
+     * @return Dispatcher
+     */
+    public function dispatch($meta_var, $children)
+    {
+        $dispatcher = new Dispatcher($meta_var, $children, $this->getContainer());
+        $this->runner->addArgument($dispatcher);
+        return $dispatcher;
+    }
+
+    /**
+     * Add middleware to application
+     * @param callable $middleware
+     * @return App
+     *
+     * @since 1.1.0
+     */
+    public function add($middleware)
+    {
+        $this->runner->pushMiddleware($this->containerBoundCallable($middleware));
+        return $this;
+    }
+
+    /**
+     * @param callable $callable
+     */
+    public function task($callable)
+    {
+        $this->runner->addTask($this->containerBoundCallable($callable));
+    }
+
+    /**
+     * @return Runner
+     */
+    public function runner()
+    {
+        return $this->runner;
+    }
+
+    /**
+     * @return Context
+     */
     public function run()
     {
-        $argv = $this->getContainer()->get('argv');
-        $context = new Context(array_slice($argv, 1));
+        $context = $this->getContainer()->get('context');
 
         try {
             $this->runner()->run($context);
@@ -33,6 +146,7 @@ class App extends Builder
         } catch (Throwable $e) {
             $context = $this->handlePhpError($e, $context);
         }
+        return $context;
     }
 
     /**
@@ -68,7 +182,8 @@ class App extends Builder
         }
 
         // No handlers found, so just display simple error
-        $this->displayErrorAndExit($e->getMessage(), $e->getCode() ?: 1);
+        $this->displayError($e->getMessage());
+        exit($e->getCode() ?: 1);
     }
 
     /**
@@ -82,7 +197,7 @@ class App extends Builder
     protected function handlePhpError(Throwable $e, Context $context)
     {
         $handler = 'phpErrorHandler';
-        $params = [$request, $response, $e];
+        $params = [$context, $e];
 
         if ($this->getContainer()->has($handler)) {
             $callable = $this->getContainer()->get($handler);
@@ -91,11 +206,22 @@ class App extends Builder
         }
 
         // No handlers found, so just display simple error
-        $this->displayErrorAndExit($e->getMessage(), $e->getCode() ?: 1);
+        $this->displayError($e->getMessage());
+        exit($e->getCode() ?: 1);
     }
 
-    protected function displayErrorAndExit($message, $error = 1)
+    protected function displayError($message)
     {
         echo "Error occured. ". $message. "\n";
+    }
+
+    protected function containerBoundCallable($callable)
+    {
+        if (is_null($callable)) return null;
+
+        // if ($callable instanceof Closure) {
+        //     $callable = $callable->bindTo($this->container);
+        // }
+        return new DeferredCallable($callable, $this->container);
     }
 }
