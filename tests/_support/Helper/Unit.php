@@ -27,8 +27,8 @@ class Unit extends Module
     public function assertOutputEquals(App $app, $expected)
     {
         $output = $this->captureOutput(function () use ($app) {
-            $context = $app->getContainer()->get('context');
-            $app->runner()->run($context);
+            $argv = $app->getContainer()->get('argv');
+            $app->runner()->run(array_slice($argv, 1));
         });
 
         $asserts = $this->getModule('Asserts');

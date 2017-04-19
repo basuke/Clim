@@ -55,14 +55,6 @@ class Container extends PimpleContainer implements ContainerInterface
             $this['argv'] = $_SERVER['argv'];
         }
 
-        if (!$this->has('context')) {
-            $this['context'] = function (ContainerInterface $c) {
-                $argv = $c->get('argv');
-                $context = new Context(array_slice($argv, 1));
-                return $context;
-            };
-        }
-
         if (!$this->has('callableResolver')) {
             /**
              * Instance of \Slim\Interfaces\CallableResolverInterface

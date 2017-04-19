@@ -2,10 +2,14 @@
 
 namespace Clim;
 
+use Clim\Container;
+use Psr\Container\ContainerInterface;
 use \UnitTester;
 
 class AppCest
 {
+    protected $saved_argv;
+
     public function _before(UnitTester $I)
     {
         $this->saved_argv = $_SERVER['argv'];
@@ -19,6 +23,7 @@ class AppCest
 
     protected function task() {
         return function ($options, $args) {
+            /** @var ContainerInterface $this */
             $greeting = $this->has('greeting') ? $this->get('greeting') : 'Hello';
             $name = $args[0] ?: 'world';
             $result = "${greeting} ${name}";
@@ -39,7 +44,7 @@ class AppCest
     {
         $I->wantTo('check basic container interface');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'hello' => 'world',
         ]);
 
@@ -64,7 +69,7 @@ class AppCest
     {
         $I->wantTo('test output of hello_world with argument');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'argv' => ['hello_world', 'Basuke'],
         ]);
 
@@ -90,7 +95,7 @@ class AppCest
     {
         $I->wantTo('test simple app with option specified');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'argv' => ['hello_world', '-u'],
         ]);
 
@@ -105,7 +110,7 @@ class AppCest
     {
         $I->wantTo('test simple app which has option but not specified');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'argv' => ['hello_world'],
         ]);
 
@@ -120,7 +125,7 @@ class AppCest
     {
         $I->wantTo('test app which has simple many options');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'argv' => ['hello_world', '-c', '-f', '-a', '-b'],
         ]);
 
@@ -146,7 +151,7 @@ class AppCest
     {
         $I->wantTo('test simple app which has option but not specified');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'argv' => ['hello_world', '--lower'],
         ]);
 
@@ -161,9 +166,11 @@ class AppCest
     {
         $I->wantTo('test simple app which has option but not specified');
 
-        $app = $I->createAnApp([
+        $app = new App([
             'argv' => ['hello_world', '--lower'],
-        ])->add(function ($context, $next) {
+        ]);
+
+        $app->add(function ($context, $next) {
             echo "Before\n";
             $next($context);
             echo "After\n";
@@ -179,7 +186,7 @@ class AppCest
 
     public function accessToContainerFromMiddleware(UnitTester $I)
     {
-        $container = new \Clim\Container([
+        $container = new Container([
             'argv' => ['hello_world'],
             'message' => 'Welcome!!!'
         ]);
@@ -202,12 +209,16 @@ class AppCest
 
         $app = new App(['argv' => ['hello_world']]);
         $app->task(function ($opt, $arg) {
-            throw new \Exception("Bad thing", 123);
+            throw new AppException("Bad thing", 123);
         });
 
-        $I->expectException(\Exception::class, function () use ($app) {
-            $context = $app->getContainer()->get('context');
-            $app->runner()->run($context);
+        $I->expectException(AppException::class, function () use ($app) {
+            $app->runner()->run([]);
         });
     }
+}
+
+class AppException extends \Exception
+{
+
 }
