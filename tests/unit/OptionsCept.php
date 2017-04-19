@@ -51,8 +51,9 @@ $I->assertEquals('TIME_STR', $option->metaVar());
 
 $option = new Option('-t|--time {TIME_STR}');
 $context = new Context(['today', 'tomorrow']);
+$parameters = $context->parameters;
 
-$I->assertTrue($option->parse('t', $context));
+$I->assertTrue($option->parse('t', $context, $parameters));
 $I->assertEquals('today', $context->options()['time']);
 $I->assertEquals('tomorrow', $context->parameters->next());
 
@@ -62,9 +63,10 @@ $I->assertEquals('tomorrow', $context->parameters->next());
 
 $option = new Option('-t|--time {TIME_STR}');
 $context = new Context(['should_not_be_used']);
+$parameters = $context->parameters;
 
 $context->parameters->tentative('42');
-$I->assertTrue($option->parse('t', $context));
+$I->assertTrue($option->parse('t', $context, $parameters));
 $I->assertEquals('42', $context->options()['t']);
 $I->assertEquals('should_not_be_used', $context->parameters->next());
 
@@ -74,8 +76,9 @@ $I->assertEquals('should_not_be_used', $context->parameters->next());
 
 $option = new Option('-t|--time {TIME_STR}');
 $context = new Context([]);
+$parameters = $context->parameters;
 
-$I->assertTrue($option->parse('time', $context));
+$I->assertTrue($option->parse('time', $context, $parameters));
 
 $value = $context->options()['time'];
 $I->assertTrue(is_string($value));
@@ -86,11 +89,12 @@ $I->assertEquals('', $value);
 
 $option = new Option('-t|--time {TIME_STR|\\d+}');
 $context = new Context(['123abc']);
+$parameters = $context->parameters;
 
 $I->expectException(
     \Clim\Exception\OptionException::class,
-    function () use ($option, $context) {
-        $option->parse('time', $context);
+    function () use ($option, $context, $parameters) {
+        $option->parse('time', $context, $parameters);
     });
 
 // ============================================
@@ -98,11 +102,12 @@ $I->expectException(
 
 $option = new Option('-t {TIME_STR|[abc}'); // "[abc" is invalid regex
 $context = new Context(['123']);
+$parameters = $context->parameters;
 
 $I->expectException(
     \Clim\Exception\DefinitionException::class,
-    function () use ($option, $context) {
-        $option->parse('t', $context);
+    function () use ($option, $context, $parameters) {
+        $option->parse('t', $context, $parameters);
     });
 
 // ============================================

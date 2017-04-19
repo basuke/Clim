@@ -3,6 +3,7 @@
 namespace Clim;
 
 use Clim\Cli\Component;
+use Clim\Cli\Parameters;
 use Clim\Exception\OptionException;
 use Clim\Helper\DeferredDefinitionTrait;
 
@@ -31,17 +32,17 @@ class Option extends Component
         parent::__construct($flags, $callable);
     }
 
-    public function parse($option, Context $context)
+    public function parse($option, Context $context, Parameters $parameters)
     {
         $this->needDefined();
 
         if (!$this->match($option)) return false;
 
         if ($this->need_value) {
-            $value = $context->parameters->tentative();
+            $value = $parameters->tentative();
 
             if (is_null($value)) {
-                $value = $context->parameters->hasMore() ? $context->parameters->next() : '';
+                $value = $parameters->hasMore() ? $parameters->next() : '';
             }
 
             if ($this->pattern) {

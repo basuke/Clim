@@ -161,7 +161,7 @@ class Runner
     protected function parseOption($value, Context $context)
     {
         foreach ($this->options as /** @var Option */ $option) {
-            $parsed = $option->parse($value, $context);
+            $parsed = $option->parse($value, $context, $context->parameters);
             if ($parsed) return;
         }
 
