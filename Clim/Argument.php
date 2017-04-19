@@ -6,7 +6,7 @@ use Clim\Cli\ArgumentInterface;
 use Clim\Cli\Component;
 use Clim\Helper\DeferredDefinitionTrait;
 
-class ArgumentHandler extends Component implements ArgumentInterface
+class Argument extends Component implements ArgumentInterface
 {
     use DeferredDefinitionTrait;
 

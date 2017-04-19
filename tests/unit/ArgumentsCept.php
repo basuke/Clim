@@ -1,7 +1,7 @@
 <?php
 
 use Clim\App;
-use Clim\ArgumentHandler;
+use Clim\Argument;
 use Clim\Context;
 
 $I = new UnitTester($scenario);
@@ -9,12 +9,12 @@ $I->wantTo('define how ArgumentParser works');
 
 // ============================================
 
-$handler = new ArgumentHandler('arg1');
+$argument = new Argument('arg1');
 $context = new Context();
 
-$handler->handle('hello', $context);
+$argument->handle('hello', $context);
 
-$I->assertEquals($handler->metaVar(), 'arg1');
+$I->assertEquals($argument->metaVar(), 'arg1');
 $I->assertEquals($context->arguments(), [
     0 => 'hello',
     'arg1' => 'hello'

@@ -64,9 +64,9 @@ class Builder
     {
         $flags = 0;
 
-        $handler = new ArgumentHandler($name, $flags, $this->containerBoundCallable($callable));
-        $this->runner->addArgument($handler);
-        return $handler;
+        $argument = new Argument($name, $flags, $this->containerBoundCallable($callable));
+        $this->runner->addArgument($argument);
+        return $argument;
     }
 
     /**

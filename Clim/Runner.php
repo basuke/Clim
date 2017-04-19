@@ -15,7 +15,7 @@ class Runner
     private $parsers = [];
 
     /** @var array */
-    private $handlers = [];
+    private $arguments = [];
 
     /** @var array */
     private $tasks = [];
@@ -28,14 +28,14 @@ class Runner
 
     /**
      * @param OptionParser[] $parsers
-     * @param ArgumentHandler[] $handlers
+     * @param ArgumentInterface[] $arguments
      */
-    public function __construct(array $parsers = [], array $handlers = [])
+    public function __construct(array $parsers = [], array $arguments = [])
     {
         $this->task_middleware = new MiddlewareStack();
 
         $this->parsers = $parsers;
-        $this->handlers = $handlers;
+        $this->arguments = $arguments;
     }
 
     public function addOption(OptionParser $option)
@@ -45,7 +45,7 @@ class Runner
 
     public function addArgument(ArgumentInterface $argument)
     {
-        $this->handlers[] = $argument;
+        $this->arguments[] = $argument;
     }
 
     public function addTask(callable $task)
@@ -64,7 +64,7 @@ class Runner
             $context = new Context($context);
         }
 
-        $this->running_arguments = array_slice($this->handlers, 0);
+        $this->running_arguments = array_slice($this->arguments, 0);
 
         $this->collectDefaultOptions($context);
 
@@ -85,8 +85,8 @@ class Runner
             if ($handled) return;
         }
 
-        foreach ($this->running_arguments as $handler) {
-            $handler->handle($context->next(), $context);
+        foreach ($this->running_arguments as $argument) {
+            $argument->handle($context->next(), $context);
         }
 
         return $this->task_middleware->run($context, function ($context) {
@@ -103,11 +103,11 @@ class Runner
 
     protected function handleArgument($arg, Context $context)
     {
-        /** @var ArgumentHandler */
-        $handler = array_shift($this->running_arguments);
+        /** @var ArgumentInterface */
+        $argument = array_shift($this->running_arguments);
 
-        if ($handler) {
-            return $handler->handle($arg, $context);
+        if ($argument) {
+            return $argument->handle($arg, $context);
         } else {
             $context->push($arg);
         }
