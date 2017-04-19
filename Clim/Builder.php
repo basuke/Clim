@@ -91,7 +91,7 @@ class Builder
 
     public function add(callable $callable)
     {
-        $this->runner->pushMiddleware($callable);
+        $this->runner->pushMiddleware($this->containerBoundCallable($callable));
         return $this;
     }
 

@@ -177,6 +177,25 @@ class AppCest
         $I->assertOutputEquals($app, "Before\nhello world\nAfter\n");
     }
 
+    public function accessWithContainerFromMiddleware(UnitTester $I)
+    {
+        $container = new \Clim\Container([
+            'argv' => ['hello_world'],
+            'message' => 'Welcome!!!'
+        ]);
+        $app = new App($container);
+
+        $app->add(function ($context, $next) {
+            if (isset($this->message)) echo $this->message . "\n";
+            $next($context);
+            return $context;
+        });
+
+        $app->task($this->task());
+
+        $I->assertOutputEquals($app, "Welcome!!!\nHello world\n");
+    }
+
     public function ifExceptionHappens(UnitTester $I)
     {
         $I->wantTo('test error case. Exception should be handled by App.');
