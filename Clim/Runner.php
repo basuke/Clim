@@ -64,6 +64,22 @@ class Runner
             $context = new Context($context);
         }
 
+        return $this->task_middleware->run($context, function ($context) {
+            if ($this->parse($context)) return $context;
+
+            $options = new Collection($context->options());
+            $arguments = new Collection($context->arguments());
+
+            foreach ($this->tasks as $task) {
+                call_user_func($task, $options, $arguments);
+            }
+
+            return $context;
+        });
+    }
+
+    protected function parse(Context $context)
+    {
         $this->running_arguments = array_slice($this->arguments, 0);
 
         $this->collectDefaultOptions($context);
@@ -82,23 +98,14 @@ class Runner
             } else {
                 $handled = $this->parseLongOption(substr($arg, 2), $context);
             }
-            if ($handled) return;
+            if ($handled) return true;
         }
 
         foreach ($this->running_arguments as $argument) {
             $argument->handle($context->next(), $context);
         }
 
-        return $this->task_middleware->run($context, function ($context) {
-            $options = new Collection($context->options());
-            $arguments = new Collection($context->arguments());
-
-            foreach ($this->tasks as $task) {
-                call_user_func($task, $options, $arguments);
-            }
-
-            return $context;
-        });
+        return false;
     }
 
     protected function handleArgument($arg, Context $context)
@@ -120,7 +127,7 @@ class Runner
             $arg = strlen($arg) > 1 ? substr($arg, 1) : null;
 
             $context->tentative($arg);
-            $this->parse($value, $context);
+            $this->parseOption($value, $context);
             $arg = $context->tentative();
         }
     }
@@ -135,14 +142,14 @@ class Runner
             $value = substr($value, 0, $pos);
         }
 
-        $this->parse($value, $context);
+        $this->parseOption($value, $context);
 
         if (!is_null($context->tentative())) {
             throw new Exception\OptionException("value is not needed");
         }
     }
 
-    protected function parse($value, Context $context)
+    protected function parseOption($value, Context $context)
     {
         foreach ($this->options as /** @var Option */ $option) {
             $parsed = $option->parse($value, $context);
