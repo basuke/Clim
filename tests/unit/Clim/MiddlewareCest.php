@@ -15,21 +15,19 @@ class MiddlewareCest
         ], $stack->run($context, new Kernel())->getResult());
     }
 
-    public function checkOneMiddleware(UnitTester $I)
+    public function checkMultipleMiddlewares(UnitTester $I)
     {
         $stack = new MiddlewareStack();
-        $stack->push(function ($context, $next) {
-            $context->setResult('<hello>');
-            $context = $next($context);
-            $context->setResult('<bye>');
-            return $context;
-        });
+        $stack->push(Kernel::sandwitch('<hello>', '<bye>'));
+        $stack->push(Kernel::sandwitch('<foo>', '<bar>'));
         $context = new MiddlewareContext();
 
         $I->assertEquals([
+            '<foo>',
             '<hello>',
             '<kernel>',
             '<bye>',
+            '<bar>',
         ], $stack->run($context, new Kernel())->getResult());
     }
 }
@@ -39,6 +37,16 @@ class Kernel
     public function __invoke(ContextInterface $context)
     {
         return "<kernel>";
+    }
+
+    public static function sandwitch($a, $b)
+    {
+        return function ($context, $next) use ($a, $b) {
+            $context->setResult($a);
+            $context = $next($context);
+            $context->setResult($b);
+            return $context;
+        };
     }
 }
 
