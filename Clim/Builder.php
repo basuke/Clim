@@ -41,9 +41,9 @@ class Builder
     {
         $flags = 0;
 
-        $parser = new OptionParser($option, $flags, $this->containerBoundCallable($callable));
-        $this->runner->addOption($parser);
-        return $parser;
+        $option = new Option($option, $flags, $this->containerBoundCallable($callable));
+        $this->runner->addOption($option);
+        return $option;
     }
 
     /**

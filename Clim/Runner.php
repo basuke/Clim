@@ -12,7 +12,7 @@ use Psr\Container\ContainerInterface;
 class Runner
 {
     /** @var array */
-    private $parsers = [];
+    private $options = [];
 
     /** @var array */
     private $arguments = [];
@@ -27,20 +27,20 @@ class Runner
     private $running_arguments;
 
     /**
-     * @param OptionParser[] $parsers
+     * @param Option[] $options
      * @param ArgumentInterface[] $arguments
      */
-    public function __construct(array $parsers = [], array $arguments = [])
+    public function __construct(array $options = [], array $arguments = [])
     {
         $this->task_middleware = new MiddlewareStack();
 
-        $this->parsers = $parsers;
+        $this->options = $options;
         $this->arguments = $arguments;
     }
 
-    public function addOption(OptionParser $option)
+    public function addOption(Option $option)
     {
-        $this->parsers[] = $option;
+        $this->options[] = $option;
     }
 
     public function addArgument(ArgumentInterface $argument)
@@ -116,36 +116,36 @@ class Runner
     protected function parseShortOption($arg, Context $context)
     {
         while ($arg) {
-            $option = $arg[0];
+            $value = $arg[0];
             $arg = strlen($arg) > 1 ? substr($arg, 1) : null;
 
             $context->tentative($arg);
-            $this->parse($option, $context);
+            $this->parse($value, $context);
             $arg = $context->tentative();
         }
     }
 
-    protected function parseLongOption($option, Context $context)
+    protected function parseLongOption($value, Context $context)
     {
         // long option
-        $pos = strpos($option, '=');
+        $pos = strpos($value, '=');
 
         if ($pos !== false) {
-            $context->tentative(substr($option, $pos + 1));
-            $option = substr($option, 0, $pos);
+            $context->tentative(substr($value, $pos + 1));
+            $value = substr($value, 0, $pos);
         }
 
-        $this->parse($option, $context);
+        $this->parse($value, $context);
 
         if (!is_null($context->tentative())) {
             throw new Exception\OptionException("value is not needed");
         }
     }
 
-    protected function parse($option, Context $context)
+    protected function parse($value, Context $context)
     {
-        foreach ($this->parsers as /** @var OptionParser */ $parser) {
-            $parsed = $parser->parse($option, $context);
+        foreach ($this->options as /** @var Option */ $option) {
+            $parsed = $option->parse($value, $context);
             if ($parsed) return;
         }
 
@@ -154,8 +154,8 @@ class Runner
 
     protected function collectDefaultOptions(Context $context)
     {
-        foreach ($this->parsers as $parser) {
-            $parser->collectDefaultValue($context);
+        foreach ($this->options as $option) {
+            $option->collectDefaultValue($context);
         }
     }
 }

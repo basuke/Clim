@@ -1,7 +1,7 @@
 <?php
 
 use Clim\Context;
-use Clim\OptionParser;
+use Clim\Option;
 use Clim\Runner;
 
 $I = new UnitTester($scenario);
@@ -12,10 +12,10 @@ $I->wantTo("define Runner features");
  */
 
 $runner = new Runner([
-    (new OptionParser('-a')),
-    (new OptionParser('-b|--boo')),
-    (new OptionParser('--case {CASE}')),
-    (new OptionParser('-d|--do {ACTION}')),
+    (new Option('-a')),
+    (new Option('-b|--boo')),
+    (new Option('--case {CASE}')),
+    (new Option('-d|--do {ACTION}')),
 ], [
     // no arguments
 ]);
@@ -57,7 +57,7 @@ $I->assertEquals(['bingo'], $context->arguments());
 //========================================
 
 $runner = new Runner([
-    (new OptionParser('-c|--case {CASE}'))->default('abc'),
+    (new Option('-c|--case {CASE}'))->default('abc'),
 ], [
 ]);
 
