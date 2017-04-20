@@ -10,33 +10,66 @@ $I->wantTo('define how ArgumentParser works');
 
 // ============================================
 
-$argument = new Argument('arg1');
+$argument1 = new Argument('arg1');
+
+$argument2 = new Argument('arg2');
+$argument2->multiple();
+
 $parameters = new Parameters([]);
 $context = new Context();
 
-$argument->handle('hello', $parameters, $context);
+$argument1->handle('hello', $parameters, $context);
 
-$I->assertEquals($argument->metaVar(), 'arg1');
+$I->assertEquals($argument1->metaVar(), 'arg1');
 $I->assertEquals($context->arguments(), [
     0 => 'hello',
     'arg1' => 'hello'
 ]);
 
 // ============================================
-
-$argument = new Argument('arg2');
-$argument->multiple();
+// multiple arguments
 
 $parameters = new Parameters(['world', 'again']);
 $context = new Context();
 
-$argument->handle('hello', $parameters, $context);
+$argument2->handle('hello', $parameters, $context);
 
 $I->assertEquals($context->arguments(), [
     0 => 'hello',
     1 => 'world',
     2 => 'again',
     'arg2' => ['hello', 'world', 'again']
+]);
+
+// ============================================
+// multiple arguments stops on option
+
+$parameters = new Parameters(['world', '--foo']);
+$context = new Context();
+
+$argument2->handle('hello', $parameters, $context);
+
+$I->assertEquals($context->arguments(), [
+    0 => 'hello',
+    1 => 'world',
+    'arg2' => ['hello', 'world']
+]);
+
+// ============================================
+// multiple arguments after --
+
+$parameters = new Parameters(['--', 'world', '--foo', 'again', '--']);
+$context = new Context();
+
+$argument2->handle('hello', $parameters, $context);
+
+$I->assertEquals($context->arguments(), [
+    0 => 'hello',
+    1 => 'world',
+    2 => '--foo',
+    3 => 'again',
+    4 => '--',
+    'arg2' => ['hello', 'world', '--foo', 'again', '--']
 ]);
 
 // ============================================

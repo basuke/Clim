@@ -77,19 +77,23 @@ class Runner
         $this->collectDefaultOptions($context);
 
         while ($this->parameters->hasMore()) {
-            /** @var string $arg */
-            $arg = $this->parameters->next();
+            switch ($this->parameters->nextKind()) {
+                case Parameters::KIND_SEPARATER:
+                    $this->parameters->next();
+                    break;
 
-            if ($arg == '--') break;
+                case Parameters::KIND_ARGUMENT:
+                    $handled = $this->handleArgument($this->parameters->next(), $context);
+                    if ($handled) return true;
+                    break;
 
-            if ($arg[0] != '-' || strlen($arg) <= 1) {
-                $handled = $this->handleArgument($arg, $context);
-                if ($handled) return true;
-            } elseif ($arg[1] != '-') {
-                // short option
-                $this->parseShortOption(substr($arg, 1), $context);
-            } else {
-                $this->parseLongOption(substr($arg, 2), $context);
+                case Parameters::KIND_OPTION_SHORT:
+                    $this->parseShortOption(substr($this->parameters->next(), 1), $context);
+                    break;
+
+                case Parameters::KIND_OPTION_LONG:
+                    $this->parseLongOption(substr($this->parameters->next(), 2), $context);
+                    break;
             }
         }
 

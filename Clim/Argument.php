@@ -42,6 +42,8 @@ class Argument extends Component implements ArgumentInterface
 
         if ($this->multiple) {
             while ($parameters->hasMore()) {
+                $kind = $parameters->nextKind();
+                if ($kind == Parameters::KIND_OPTION_LONG || $kind == Parameters::KIND_OPTION_SHORT) break;
                 $context->push($parameters->next(), $name, true);
             }
         }
