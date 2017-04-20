@@ -17,6 +17,9 @@ class Option extends Component
     /** @var bool $need_value */
     protected $need_value = false;
 
+    /** @var bool */
+    protected $multiple = false;
+
     /** @var string $pattern */
     protected $pattern;
 
@@ -55,7 +58,7 @@ class Option extends Component
         }
 
         foreach ($this->options as $key) {
-            $context->set($key, $value);
+            $context->set($key, $value, $this->multiple);
         }
         return true;
     }
@@ -83,6 +86,11 @@ class Option extends Component
     {
         $this->needDefined();
         return $this->need_value;
+    }
+
+    public function multiple($flag = true)
+    {
+        $this->multiple = $flag;
     }
 
     protected function define($body, $name, $pattern, $note)

@@ -6,8 +6,7 @@ use Clim\Cli\ArgumentInterface;
 use Clim\Cli\Parameters;
 use Clim\Cli\Spec;
 use Clim\Exception\OptionException;
-use Clim\Middleware\MiddlewareStack;
-use Slim\Collection;
+use Clim\Helper\Hash;
 
 class Runner
 {
@@ -52,14 +51,16 @@ class Runner
 
         /** @var Context $context */
         $context = $this->spec->taskMiddleware()->run($context, function (Context $context) {
+            $this->collectDefaults($context);
+
             if ($this->parse($context)) return $context;
 
             while ($this->parameters->hasMore()) {
                 $context->push($this->parameters->next());
             }
 
-            $options = new Collection($context->options());
-            $arguments = new Collection($context->arguments());
+            $options = new Hash($context->options());
+            $arguments = new Hash($context->arguments());
 
             foreach ($this->spec->tasks() as $task) {
                 call_user_func($task, $options, $arguments);
@@ -73,8 +74,6 @@ class Runner
     protected function parse(Context $context)
     {
         $this->running_arguments = array_slice($this->spec->arguments(), 0);
-
-        $this->collectDefaultOptions($context);
 
         while ($this->parameters->hasMore()) {
             switch ($this->parameters->nextKind()) {
@@ -156,7 +155,7 @@ class Runner
         throw new OptionException("unknown option");
     }
 
-    protected function collectDefaultOptions(Context $context)
+    protected function collectDefaults(Context $context)
     {
         foreach ($this->spec->options() as $option) {
             $option->collectDefaultValue($context);

@@ -2,84 +2,107 @@
 
 namespace Clim;
 
-use Clim\Cli\Parameters;
+use Clim\Helper\Hash;
 use Clim\Middleware\ContextInterface as MiddlewareContextInterface;
 
 class Context implements MiddlewareContextInterface
 {
-    /** @var array */
-    protected $_options;
+    /** @var Hash*/
+    protected $options;
 
-    /** @var array $_arguments */
-    protected $_arguments;
+    /** @var Hash */
+    protected $arguments;
 
     /** @var App */
     protected $app;
 
     /**
-     * hold result
-     * @var string
+     * @var mixed
      */
     protected $result;
 
     public function __construct()
     {
-        $this->_options = [];
-        $this->_arguments = [];
+        $this->options = new Hash();
+        $this->arguments = new Hash();
     }
 
+    /**
+     * @param mixed $value
+     * @param string $name
+     * @param bool $append
+     */
     public function push($value, $name = null, $append = false)
     {
-        array_push($this->_arguments, $value);
+        $this->arguments->push($value);
 
         if ($name) {
-            if ($append) {
-                if (!isset($this->_arguments[$name])) {
-                    $this->_arguments[$name] = [];
-                }
-
-                $this->_arguments[$name][] = $value;
-            } else {
-                $this->_arguments[$name] = $value;
-            }
+            $this->arguments->set($name, $value, $append);
         }
     }
 
+    /**
+     * @param string $name key
+     * @return bool
+     */
     public function has($name)
     {
-        return isset($this->_options[$name]);
+        return isset($this->options[$name]);
     }
 
-    public function set($name, $value)
+    /**
+     * @param string $name key
+     * @param mixed $value value
+     * @param bool $append Default is false
+     */
+    public function set($name, $value, $append = false)
     {
-        $this->_options[$name] = $value;
+        $this->options->set($name, $value, $append);
     }
 
+    /**
+     * @return array
+     */
     public function options()
     {
-        return $this->_options;
+        return $this->options->all();
     }
 
+    /**
+     * @return array
+     */
     public function arguments()
     {
-        return $this->_arguments;
+        return $this->arguments->all();
     }
 
+    /**
+     * @return App
+     */
     public function getApp()
     {
         return $this->app;
     }
 
+    /**
+     * @param App $app
+     */
     public function setApp(App $app)
     {
         $this->app = $app;
     }
 
+    /**
+     * @return mixed
+     */
     public function getResult()
     {
         return $this->result;
     }
 
+    /**
+     * @param mixed $result
+     */
     public function setResult($result)
     {
         $this->result = $result;

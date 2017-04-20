@@ -125,3 +125,24 @@ $I->assertEquals([
     'time' => 'today',
 ], $context->options());
 
+// ============================================
+// test multiple option with value
+
+$option = new Option('--email {EMAIL}');
+$option->multiple();
+
+$parameters = new Parameters([]);
+$context = new Context();
+
+$parameters->tentative('foo@example.com');
+$option->parse('email', $parameters, $context);
+
+$parameters->tentative('bar@example.com');
+$option->parse('email', $parameters, $context);
+
+$value = $context->options()['email'];
+$I->assertEquals([
+    'foo@example.com',
+    'bar@example.com',
+], $value);
+
