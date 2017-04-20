@@ -1,5 +1,6 @@
 <?php
 
+use Clim\Cli\Spec;
 use Clim\Context;
 use Clim\Option;
 use Clim\Runner;
@@ -11,15 +12,16 @@ $I->wantTo("define Runner features");
  * application with some option arguments
  */
 
-$runner = new Runner([
+$runner = new Runner(new Spec([
     (new Option('-a')),
     (new Option('-b|--boo')),
     (new Option('--case {CASE}')),
     (new Option('-d|--do {ACTION}')),
 ], [
     // no arguments
-]);
+]));
 
+/** @var Context $context */
 $context = $runner->run(['hello', '-a', '--do', 'foo', 'bar']);
 $I->assertEquals([
     'hello',
@@ -56,10 +58,10 @@ $I->assertEquals(['bingo'], $context->arguments());
 // application with default option value
 //========================================
 
-$runner = new Runner([
+$runner = new Runner(new Spec([
     (new Option('-c|--case {CASE}'))->default('abc'),
 ], [
-]);
+]));
 
 $context = $runner->run([]);
 $I->assertEquals([

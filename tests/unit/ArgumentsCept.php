@@ -10,9 +10,10 @@ $I->wantTo('define how ArgumentParser works');
 // ============================================
 
 $argument = new Argument('arg1');
+$parameters = new \Clim\Cli\Parameters([]);
 $context = new Context();
 
-$argument->handle('hello', $context);
+$argument->handle('hello', $parameters, $context);
 
 $I->assertEquals($argument->metaVar(), 'arg1');
 $I->assertEquals($context->arguments(), [
@@ -31,6 +32,7 @@ $app->argument('arg2')->default('universe');
 // ============================================
 // defined arguments and undefined argument
 
+/** @var Context $context */
 $context = $app->runner()->run(['hello', 'world', 'again']);
 
 $I->assertEquals($context->arguments(), [
@@ -44,6 +46,7 @@ $I->assertEquals($context->arguments(), [
 // ============================================
 // default argument
 
+/** @var Context $context */
 $context = $app->runner()->run(['hello']);
 
 $I->assertEquals($context->arguments(), [

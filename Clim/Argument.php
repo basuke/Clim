@@ -4,6 +4,7 @@ namespace Clim;
 
 use Clim\Cli\ArgumentInterface;
 use Clim\Cli\Component;
+use Clim\Cli\Parameters;
 use Clim\Helper\DeferredDefinitionTrait;
 
 class Argument extends Component implements ArgumentInterface
@@ -22,7 +23,7 @@ class Argument extends Component implements ArgumentInterface
         parent::__construct($flags, $callable);
     }
 
-    public function handle($argument, Context $context)
+    public function handle($argument, Parameters $parameters, Context $context)
     {
         $this->needDefined();
 

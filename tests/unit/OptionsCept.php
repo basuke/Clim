@@ -1,5 +1,6 @@
 <?php
 
+use Clim\Cli\Parameters;
 use \Clim\Context;
 use \Clim\Option;
 
@@ -50,32 +51,35 @@ $I->assertEquals('TIME_STR', $option->metaVar());
 // extra value
 
 $option = new Option('-t|--time {TIME_STR}');
-$context = new Context(['today', 'tomorrow']);
+$parameters = new Parameters(['today', 'tomorrow']);
+$context = new Context();
 
-$I->assertTrue($option->parse('t', $context));
+$I->assertTrue($option->parse('t', $parameters, $context));
 $I->assertEquals('today', $context->options()['time']);
-$I->assertEquals('tomorrow', $context->next());
+$I->assertEquals('tomorrow', $parameters->next());
 
 // ============================================
 // see the option works with option with
 // tentative value
 
 $option = new Option('-t|--time {TIME_STR}');
-$context = new Context(['should_not_be_used']);
+$parameters = new Parameters(['should_not_be_used']);
+$context = new Context();
 
-$context->tentative('42');
-$I->assertTrue($option->parse('t', $context));
+$parameters->tentative('42');
+$I->assertTrue($option->parse('t', $parameters, $context));
 $I->assertEquals('42', $context->options()['t']);
-$I->assertEquals('should_not_be_used', $context->next());
+$I->assertEquals('should_not_be_used', $parameters->next());
 
 // ============================================
 // see option works even if there is no more
 // arguments
 
 $option = new Option('-t|--time {TIME_STR}');
-$context = new Context([]);
+$parameters = new Parameters([]);
+$context = new Context();
 
-$I->assertTrue($option->parse('time', $context));
+$I->assertTrue($option->parse('time', $parameters, $context));
 
 $value = $context->options()['time'];
 $I->assertTrue(is_string($value));
@@ -85,31 +89,33 @@ $I->assertEquals('', $value);
 // see the option works with option with value and pattern
 
 $option = new Option('-t|--time {TIME_STR|\\d+}');
-$context = new Context(['123abc']);
+$parameters = new Parameters(['123abc']);
+$context = new Context();
 
 $I->expectException(
     \Clim\Exception\OptionException::class,
-    function () use ($option, $context) {
-        $option->parse('time', $context);
+    function () use ($option, $context, $parameters) {
+        $option->parse('time', $parameters, $context);
     });
 
 // ============================================
 // detect invalid regular expression error
 
 $option = new Option('-t {TIME_STR|[abc}'); // "[abc" is invalid regex
-$context = new Context(['123']);
+$parameters = new Parameters(['123']);
+$context = new Context();
 
 $I->expectException(
     \Clim\Exception\DefinitionException::class,
-    function () use ($option, $context) {
-        $option->parse('t', $context);
+    function () use ($option, $context, $parameters) {
+        $option->parse('t', $parameters, $context);
     });
 
 // ============================================
 // see option default works
 
-$option = (new Option('-t|--time {TIME_STR}'))
-                ->default('today');
+$option = new Option('-t|--time {TIME_STR}');
+$option->default('today');
 $context = new Context([]);
 
 $option->collectDefaultValue($context);
