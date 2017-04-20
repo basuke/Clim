@@ -2,6 +2,7 @@
 
 use Clim\App;
 use Clim\Argument;
+use Clim\Cli\Parameters;
 use Clim\Context;
 
 $I = new UnitTester($scenario);
@@ -10,7 +11,7 @@ $I->wantTo('define how ArgumentParser works');
 // ============================================
 
 $argument = new Argument('arg1');
-$parameters = new \Clim\Cli\Parameters([]);
+$parameters = new Parameters([]);
 $context = new Context();
 
 $argument->handle('hello', $parameters, $context);
@@ -22,10 +23,27 @@ $I->assertEquals($context->arguments(), [
 ]);
 
 // ============================================
+
+$argument = new Argument('arg2');
+$argument->multiple();
+
+$parameters = new Parameters(['world', 'again']);
+$context = new Context();
+
+$argument->handle('hello', $parameters, $context);
+
+$I->assertEquals($context->arguments(), [
+    0 => 'hello',
+    1 => 'world',
+    2 => 'again',
+    'arg2' => ['hello', 'world', 'again']
+]);
+
+// ============================================
 // this app accept two arguments. The first one
 // is required and second one has default value.
 
-$app = $I->createAnApp();
+$app = new App();
 $app->argument('arg1');
 $app->argument('arg2')->default('universe');
 

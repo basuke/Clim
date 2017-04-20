@@ -11,6 +11,8 @@ class Argument extends Component implements ArgumentInterface
 {
     use DeferredDefinitionTrait;
 
+    protected $multiple;
+
     /**
      * @param string $definition
      * @param int $flags
@@ -35,7 +37,19 @@ class Argument extends Component implements ArgumentInterface
             $argument = $this->default;
         }
 
-        $context->push($argument, $this->metaVar());
+        $name = $this->metaVar();
+        $context->push($argument, $name, $this->multiple);
+
+        if ($this->multiple) {
+            while ($parameters->hasMore()) {
+                $context->push($parameters->next(), $name, true);
+            }
+        }
+    }
+
+    public function multiple($flag = true)
+    {
+        $this->multiple = $flag;
     }
 
     protected function define($body, $name, $pattern, $note)

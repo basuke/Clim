@@ -34,11 +34,11 @@ class Context implements MiddlewareContextInterface
 
         if ($name) {
             if ($append) {
-                if (isset($this->_arguments[$name])) {
-                    $this->_arguments[] = $value;
-                } else {
-                    $this->_arguments[$name] = [$value];
+                if (!isset($this->_arguments[$name])) {
+                    $this->_arguments[$name] = [];
                 }
+
+                $this->_arguments[$name][] = $value;
             } else {
                 $this->_arguments[$name] = $value;
             }
