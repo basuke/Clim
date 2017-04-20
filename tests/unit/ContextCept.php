@@ -7,12 +7,15 @@ $I = new UnitTester($scenario);
 $I->wantTo("define Context features");
 
 $parameters = new Parameters(['Hello', 'world']);
-$I->assertEquals($parameters->argv(), ['Hello', 'world']);
 $I->assertEquals($parameters->next(), 'Hello');
 $I->assertTrue($parameters->hasMore());
 $I->assertEquals($parameters->next(), 'world');
 $I->assertFalse($parameters->hasMore());
 $I->assertEquals($parameters->next(), null);
+
+$parameters = new Parameters(['Hello', 'world']);
+$I->assertEquals($parameters->dumpOut(), ['Hello', 'world']);
+$I->assertFalse($parameters->hasMore());
 
 $context = new Context();
 $context->push('foo');

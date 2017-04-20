@@ -214,7 +214,7 @@ class App
 
     protected function displayError($message)
     {
-        echo "Error occured. ". $message. "\n";
+        echo "Error occurred. ". $message. "\n";
     }
 
     protected function containerBoundCallable($callable)

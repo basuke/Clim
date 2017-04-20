@@ -21,9 +21,9 @@ class Parameters
         $this->_argv = $argv;
     }
 
-    public function argv()
+    public function dumpOut()
     {
-        return $this->_argv;
+        return array_splice($this->_argv, 0, count($this->_argv));
     }
 
     public function next()

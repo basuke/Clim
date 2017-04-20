@@ -46,7 +46,7 @@ class Dispatcher extends Component implements ArgumentInterface
 
         call_user_func($builder, $child);
 
-        $child->runner()->run($parameters->argv(), $context);
+        $child->runner()->run($parameters->dumpOut(), $context);
         return true;
     }
 
