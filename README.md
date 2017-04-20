@@ -5,9 +5,17 @@ PHP Micro framework for command line application inspired by Slim Framework
 
 ## Features
 
-- Container support
-- Easy yet powerful configuration
-- Command dispatch
+- Simple yet powerful configuration
+- DI Container support
+- Sub command dispatch
+- Middleware support
+
+## Install
+
+```bash
+$ composer require climphp/clim
+```
+
 
 ## Usage
 
@@ -43,7 +51,7 @@ $ php hello.php -u Kashiyuka
 Welcome, KASHIYUKA
 ```
 
-For more information on how to configure your clie application, see the [Documentation](https://www.climframework.com/docs/start/cli.html).
+For more information on how to configure your clie application, see the [Documentation](https://climphp.github.io/Clim/).
 
 ## Tests
 
