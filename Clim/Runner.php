@@ -39,7 +39,7 @@ class Runner
     /**
      * @param array $argv
      * @param Context|null $context
-     * @return Middleware\ContextInterface
+     * @return Context
      */
     public function run($argv, Context $context = null)
     {
@@ -50,7 +50,8 @@ class Runner
 
         if ($this->app) $context->setApp($this->app);
 
-        return $this->spec->taskMiddleware()->run($context, function (Context $context) {
+        /** @var Context $context */
+        $context = $this->spec->taskMiddleware()->run($context, function (Context $context) {
             if ($this->parse($context)) return $context;
 
             while ($this->parameters->hasMore()) {
@@ -66,6 +67,7 @@ class Runner
 
             return $context;
         });
+        return $context;
     }
 
     protected function parse(Context $context)
