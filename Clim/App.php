@@ -43,7 +43,7 @@ class App
 
     /**
      * @param string $option
-     * @param Closure|null $callable
+     * @param callable $callable
      * @return Option
      */
     public function option($option, $callable = null)

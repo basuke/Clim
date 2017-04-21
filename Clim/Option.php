@@ -23,16 +23,19 @@ class Option extends Component
     /** @var string $pattern */
     protected $pattern;
 
+    /** @var callable */
+    protected $callback;
+
     /**
      * @param string $definition
      * @param int $flags
-     * @param \Closure|null $callable
+     * @param callable $callback
      */
-    public function __construct($definition, $flags = 0, $callable = null)
+    public function __construct($definition, $flags = 0, $callback = null)
     {
         $this->definition = $definition;
-
-        parent::__construct($flags, $callable);
+        parent::__construct($flags, $callback);
+        $this->callback = $callback;
     }
 
     public function parse($option, Parameters $parameters, Context $context)
@@ -55,6 +58,11 @@ class Option extends Component
             }
         } else {
             $value = true;
+        }
+
+        if ($this->callback) {
+            $value = call_user_func($this->callback, $context, $value);
+            if (is_null($value)) return true;
         }
 
         foreach ($this->options as $key) {

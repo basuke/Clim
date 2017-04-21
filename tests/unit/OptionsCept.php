@@ -146,3 +146,44 @@ $I->assertEquals([
     'bar@example.com',
 ], $value);
 
+// ============================================
+$I->wantTo("test options with callback");
+
+$option = new Option("-d", 0, function (Context $context) use ($I) {
+    $I->assertFalse(isset($context->options()['d']));
+    $context->set('called', true);
+});
+
+$parameters = new Parameters([]);
+$context = new Context();
+$option->parse('d', $parameters, $context);
+
+$I->assertTrue($context->options()['called']);
+$I->assertFalse(isset($context->options()['d']));
+
+// ============================================
+$I->wantTo("test options with callback which return value");
+
+$option = new Option("-d", 0, function (Context $context) use ($I) {
+    return false;
+});
+
+$parameters = new Parameters([]);
+$context = new Context();
+$option->parse('d', $parameters, $context);
+
+$I->assertEquals(false, $context->options()['d']);
+
+// ============================================
+$I->wantTo("test valued options with callback");
+
+$option = new Option("-d {VAL}", 0, function (Context $context, $value) use ($I) {
+    return strtoupper($value);
+});
+
+$parameters = new Parameters(['hi-ho']);
+$context = new Context();
+$option->parse('d', $parameters, $context);
+
+$I->assertEquals('HI-HO', $context->options()['d']);
+
