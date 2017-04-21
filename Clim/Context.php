@@ -2,10 +2,10 @@
 
 namespace Clim;
 
+use Clim\Cli\ContextInterface;
 use Clim\Helper\Hash;
-use Clim\Middleware\ContextInterface as MiddlewareContextInterface;
 
-class Context implements MiddlewareContextInterface
+class Context implements ContextInterface
 {
     /** @var Hash*/
     protected $options;

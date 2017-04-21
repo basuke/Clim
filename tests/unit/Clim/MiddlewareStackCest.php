@@ -1,7 +1,7 @@
 <?php
 
-use Clim\Middleware\ContextInterface;
-use Clim\Middleware\MiddlewareStack;
+use Clim\Cli\ContextInterface;
+use Clim\Cli\MiddlewareStack;
 
 class MiddlewareCest
 {

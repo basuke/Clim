@@ -8,7 +8,6 @@
 
 namespace Clim\Cli;
 
-use Clim\Middleware\MiddlewareStack;
 use Clim\Option;
 
 class Spec

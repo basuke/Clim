@@ -1,6 +1,6 @@
 <?php
 
-namespace Clim\Middleware;
+namespace Clim\Cli;
 
 interface ContextInterface
 {
