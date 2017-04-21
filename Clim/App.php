@@ -17,6 +17,9 @@ class App
     /** @var Spec */
     private $spec;
 
+    /** @var bool */
+    private $handle_errors = true;
+
     /**
      * Constructor of Clim\App
      * @param ContainerInterface|array|null $container
@@ -146,11 +149,24 @@ class App
             $context = $this->runner()->run(array_slice($argv, 1));
             return $context;
         } catch (Exception $e) {
-            $this->handleException($e);
+            if ($this->handle_errors) {
+                $this->handleException($e);
+            } else {
+                throw $e;
+            }
         } catch (Throwable $e) {
-            $this->handlePhpError($e);
+            if ($this->handle_errors) {
+                $this->handlePhpError($e);
+            } else {
+                throw $e;
+            }
         }
         return null;
+    }
+
+    public function disableErrorHandling()
+    {
+        $this->handle_errors = false;
     }
 
     /**

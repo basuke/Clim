@@ -1,8 +1,11 @@
 <?php
 
+use Clim\App;
+use Clim\Middleware\DebugMiddleware;
+
 require dirname(__DIR__). '/vendor/autoload.php';
 
-$app = new Clim\App();
+$app = new App();
 
 $app->opt('-u|--upper');
 $app->arg('name')->default('unknown');
@@ -12,7 +15,9 @@ $app->task(function ($opts, $args) {
 
     if ($opts['u']) $name = strtoupper($name);
 
-    echo "Welcome, {$name}\n";
+    echo "Welcome, {$name} {$unknown}\n"; // <-- this will invoke notice.
 });
+
+$app->add(DebugMiddleware::class);
 
 $app->run();
