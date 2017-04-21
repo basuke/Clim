@@ -143,7 +143,7 @@ class App
             /** @var array $argv */
             $argv = $this->getContainer()->get('argv');
             /** @@var Context $context */
-            $context = $this->runner()->run($argv);
+            $context = $this->runner()->run(array_slice($argv, 1));
             return $context;
         } catch (Exception $e) {
             $this->handleException($e);
