@@ -17,7 +17,7 @@ class Hash implements \ArrayAccess
     {
         foreach ($args as $arg) {
             if (!is_array($arg)) throw new \InvalidArgumentException("arguments must be an array");
-            
+
             foreach ($arg as $key => $value) {
                 if (is_int($key)) {
                     $a1[] = $value;
@@ -42,7 +42,7 @@ class Hash implements \ArrayAccess
         return $result;
     }
 
-    public function __construct($array = [], array ...$args)
+    public function __construct($array = [], ...$args)
     {
         $this->data = static::merge($array, ...$args);
     }
