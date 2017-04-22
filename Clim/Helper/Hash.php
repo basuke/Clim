@@ -13,9 +13,11 @@ class Hash implements \ArrayAccess
 {
     protected $data;
 
-    public static function merge(array $a1, array ...$args)
+    public static function merge(array $a1, ...$args)
     {
         foreach ($args as $arg) {
+            if (!is_array($arg)) throw new \InvalidArgumentException("arguments must be an array");
+            
             foreach ($arg as $key => $value) {
                 if (is_int($key)) {
                     $a1[] = $value;
