@@ -2,11 +2,12 @@
 
 namespace Clim;
 
+use Clim\Helper\Hash;
+use Clim\Middleware\DatabaseMiddleware;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Pimple\Container as PimpleContainer;
 use Slim\CallableResolver;
-use Slim\Collection;
 use Slim\Exception\ContainerValueNotFoundException;
 use Slim\Exception\ContainerException as SlimContainerException;
 
@@ -48,11 +49,17 @@ class Container extends PimpleContainer implements ContainerInterface
          * @return array|\ArrayAccess
          */
         $this['settings'] = function () use ($userSettings, $defaultSettings) {
-            return new Collection(array_merge($defaultSettings, $userSettings));
+            return Hash::merge($defaultSettings, $userSettings);
         };
 
         if (!$this->has('argv')) {
             $this['argv'] = $_SERVER['argv'];
+        }
+
+        if (!$this->has('Database')) {
+            $this['Database'] = function ($c) {
+                return new DatabaseMiddleware($c);
+            };
         }
 
         if (!$this->has('callableResolver')) {

@@ -1,17 +1,17 @@
 <?php
 
 require dirname(__DIR__). '/vendor/autoload.php';
-require __DIR__. '/middlewares/DatabaseMiddleware.php';
 
 $app = new Clim\App(['settings' => [
     // default database connection parameter.
     // it can be overwritten by '--dsn' option from cli.
-    // @see middlewares/DatabaseMiddleware.php
-
-    'dsn' => 'pgsql:host=localhost;dbname=sampledb;user=foobar',
+    // @see \Clim\Middleware/DatabaseMiddleware.php
+    'database' => [
+        'dsn' => 'pgsql:host=localhost;dbname=sampledb;user=foobar',
+    ],
 ]]);
 
-$app->add('DatabaseMiddleware');
+$app->add('Database');
 $app->arg('sql');
 
 $app->task(function ($opts, $args) {

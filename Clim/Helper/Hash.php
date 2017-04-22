@@ -13,12 +13,36 @@ class Hash implements \ArrayAccess
 {
     protected $data;
 
-    public function __construct($data = [], array ...$more)
+    public static function merge(array $a1, array ...$args)
     {
-        $this->data = $data;
-        foreach ($more as $array) {
-            $this->update($array);
+        foreach ($args as $arg) {
+            foreach ($arg as $key => $value) {
+                if (is_int($key)) {
+                    $a1[] = $value;
+                } else {
+                    if (isset($a1[$key]) && is_array($a1[$key]) && is_array($value)) {
+                        $value = static::merge($a1[$key], $value);
+                    }
+
+                    $a1[$key] = $value;
+                }
+            }
         }
+        return $a1;
+    }
+
+    public static function subset(array $array, array $keys)
+    {
+        $result = [];
+        foreach ($keys as $key) {
+            $result[$key] = isset($array[$key]) ? $array[$key] : null;
+        }
+        return $result;
+    }
+
+    public function __construct($array = [], array ...$args)
+    {
+        $this->data = static::merge($array, ...$args);
     }
 
     public function all()
@@ -59,7 +83,19 @@ class Hash implements \ArrayAccess
 
     public function update(array $array)
     {
-        $this->data = array_replace($this->data, $array);
+        $this->data = static::merge($this->data, $array);
+        return $this;
+    }
+
+    protected function enhash($array)
+    {
+        if (!is_array($array)) return $array;
+
+        $result = [];
+        foreach ($array as $key => $value) {
+            $result[$key] = $this->enhash($value);
+        }
+        return new Hash($result);
     }
 
     public function offsetExists($offset)
