@@ -13,9 +13,12 @@ class Hash implements \ArrayAccess
 {
     protected $data;
 
-    public function __construct($data = [])
+    public function __construct($data = [], array ...$more)
     {
         $this->data = $data;
+        foreach ($more as $array) {
+            $this->update($array);
+        }
     }
 
     public function all()
@@ -52,6 +55,11 @@ class Hash implements \ArrayAccess
         }
 
         $this->data[$offset] = $elm;
+    }
+
+    public function update(array $array)
+    {
+        $this->data = array_replace($this->data, $array);
     }
 
     public function offsetExists($offset)

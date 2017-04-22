@@ -53,4 +53,40 @@ class HelperCest
             'bar' => [42, 4200],
         ], $hash->all());
     }
+
+    public function testHashCOnstructor(UnitTester $I)
+    {
+        $hash = new Hash([
+            'hello' => 'world',
+            'secret' => null,
+        ], [
+            'secret' => 42,
+            'foo' => 'bar',
+        ]);
+
+        $I->assertEquals([
+            'hello' => 'world',
+            'foo' => 'bar',
+            'secret' => 42,
+        ], $hash->all());
+    }
+
+    public function testHashUpdate(UnitTester $I)
+    {
+        $hash = new Hash([
+            'hello' => 'world',
+            'secret' => null,
+        ]);
+
+        $hash->update([
+            'secret' => 42,
+            'foo' => 'bar',
+        ]);
+
+        $I->assertEquals([
+            'hello' => 'world',
+            'foo' => 'bar',
+            'secret' => 42,
+        ], $hash->all());
+    }
 }
