@@ -19,15 +19,14 @@ class DebugMiddleware
     private $display_error = true;
     private $error_reporting_level = E_ALL;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $c)
     {
         if (!class_exists('\Symfony\Component\Debug\Debug')) {
             throw new \Clim\Exception\DefinitionException("symfony/debug is required for " . static::class);
         }
 
-        $setting = new Hash($container['settings']['debug']);
-        $this->display_error = $setting['display_error'] ?: true;
-        $this->error_reporting_level = $setting['error_reporting_level'] ?: E_ALL;
+        $this->display_error = isset($c['settings']['display_error']) ? $c['settings']['display_error'] : true;
+        $this->error_reporting_level = isset($c['settings']['error_reporting_level']) ? $c['settings']['display_error'] : E_ALL;
     }
 
     public function __invoke(Context $context, callable $next)

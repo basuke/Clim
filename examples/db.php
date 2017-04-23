@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\Debug\Debug;
+
 require dirname(__DIR__). '/vendor/autoload.php';
 
 $app = new Clim\App(['settings' => [
@@ -11,17 +13,20 @@ $app = new Clim\App(['settings' => [
     ],
 ]]);
 
-$app->add('Database');
 $app->arg('sql');
 
 $app->task(function ($opts, $args) {
     // database connection is supplied by service provier
+    /** @var \PDO $db */
     $db = $this->db;
+
+    /** @var \Symfony\Component\Console\Style\SymfonyStyle $output */
+    $output = $this->output;
 
     // what to execute is from command line argument
     $sql = $args['sql'];
 
-    echo $sql . "\n";
+    $output->title($sql);
 
     foreach ($db->query($sql) as $row) {
         foreach ($row as $key => $value) {
@@ -30,5 +35,9 @@ $app->task(function ($opts, $args) {
         echo "\n";
     }
 });
+
+$app->add('Database');
+$app->add('Console');
+$app->add('Debug');
 
 $app->run();

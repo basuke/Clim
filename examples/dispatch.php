@@ -1,25 +1,30 @@
 <?php
 
+use Clim\App;
+use Clim\Context;
+
 require dirname(__DIR__). '/vendor/autoload.php';
 
 $container = new \Clim\Container([
-    'quiet' => false
+    'count' => 1
 ]);
 
 $container['out'] = function($c) {
     return function($msg) use ($c) {
-        if (!$c->quiet) echo $msg. "\n";
+        for ($i = 0; $i < $c->count; $i++) {
+            echo $msg. "\n";
+        }
     };
 };
 
 $app = new Clim\App($container);
 
-$app->option('-q|--quiet', function ($value) {
-    $this['quiet'] = true;
+$app->option('-c|--count {COUNT}', function (Context $context, $value) {
+    $this['count'] = $value;
 });
 
 $app->dispatch('{COMMAND}', [
-    'hi' => function ($app) {
+    'hi' => function (App $app) {
         $app->argument('name')
             ->default('world');
 
@@ -29,7 +34,7 @@ $app->dispatch('{COMMAND}', [
         });
     },
 
-    'bye' => function ($app) {
+    'bye' => function (App $app) {
         $app->option('-a|--again');
 
         $app->task(function ($opt, $args) {
@@ -41,5 +46,8 @@ $app->dispatch('{COMMAND}', [
         });
     },
 ]);
+
+$app->add('Console');
+$app->add('Debug');
 
 $app->run();

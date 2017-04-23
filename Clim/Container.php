@@ -3,7 +3,9 @@
 namespace Clim;
 
 use Clim\Helper\Hash;
+use Clim\Middleware\ConsoleMiddleware;
 use Clim\Middleware\DatabaseMiddleware;
+use Clim\Middleware\DebugMiddleware;
 use Interop\Container\ContainerInterface;
 use Interop\Container\Exception\ContainerException;
 use Pimple\Container as PimpleContainer;
@@ -56,9 +58,21 @@ class Container extends PimpleContainer implements ContainerInterface
             $this['argv'] = $_SERVER['argv'];
         }
 
+        if (!$this->has('Debug')) {
+            $this['Debug'] = function (ContainerInterface $c) {
+                return new DebugMiddleware($c);
+            };
+        }
+
         if (!$this->has('Database')) {
-            $this['Database'] = function ($c) {
+            $this['Database'] = function (ContainerInterface $c) {
                 return new DatabaseMiddleware($c);
+            };
+        }
+
+        if (!$this->has('Console')) {
+            $this['Console'] = function (ContainerInterface $c) {
+                return new ConsoleMiddleware($c);
             };
         }
 
