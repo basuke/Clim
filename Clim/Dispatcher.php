@@ -18,6 +18,8 @@ class Dispatcher extends Component implements ArgumentInterface
     /** @var ContainerInterface $container */
     private $container;
 
+    /** @var array */
+    private $map;
     /**
      * @param string $definition
      * @param array $children
@@ -31,17 +33,24 @@ class Dispatcher extends Component implements ArgumentInterface
 
         $this->children = $children;
         $this->container = $container;
+        $this->map = [];
+        foreach (array_keys($this->children) as $key) {
+            $keys = explode('|', $key);
+            foreach ($keys as $name) {
+                $this->map[$name] = $children[$key];
+            }
+        }
     }
 
     public function handle($argument, Parameters $parameters, Context $context)
     {
         $this->needDefined();
 
-        if (!array_key_exists($argument, $this->children)) {
-            throw new \Exception("invalid sub command");
+        if (!array_key_exists($argument, $this->map)) {
+            throw new \Exception("invalid sub command: " . $argument);
         }
 
-        $builder = $this->children[$argument];
+        $builder = $this->map[$argument];
         $child = new App($this->container);
 
         call_user_func($builder, $child);

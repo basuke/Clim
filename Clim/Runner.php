@@ -59,11 +59,8 @@ class Runner
                 $context->push($this->parameters->next());
             }
 
-            $options = new Hash($context->options());
-            $arguments = new Hash($context->arguments());
-
             foreach ($this->spec->tasks() as $task) {
-                call_user_func($task, $options, $arguments);
+                $context->execute($task);
             }
 
             return $context;

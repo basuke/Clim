@@ -1,11 +1,12 @@
 <?php
 
 use Clim\App;
+use Clim\Context;
 
 $I = new UnitTester($scenario);
 $I->wantTo('perform dispatch and see the result');
 
-$app = new Clim\App(['name' => 'Kashiyuka']);
+$app = new App(['name' => 'Kashiyuka']);
 
 // global option
 $app->option('--age {AGE|\\d+}');
@@ -33,4 +34,19 @@ $I->assertOutputEquals($app, "FOO 49-Kashiyuka\n");
 
 $I->willPassArguments($app, ['hello_dispatch', 'bar']);
 $I->assertOutputEquals($app, "BAR\n");
+
+$app = new App();
+$app->dispatch('{COMMAND}', [
+    'ls|list' => function (App $app) {
+        $app->task(function () {
+            return 'HELLO';
+        });
+    }
+]);
+
+$context = $app->runner()->run(['ls']);
+$I->assertEquals('HELLO', $context->getResult());
+
+$context = $app->runner()->run(['list']);
+$I->assertEquals('HELLO', $context->getResult());
 
