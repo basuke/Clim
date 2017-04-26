@@ -124,7 +124,7 @@ class App
      */
     public function task($callable)
     {
-        $this->spec->addTask($this->containerBoundCallable($callable));
+        $this->spec->addTask(new Task($callable, $this->getContainer()));
     }
 
     /**

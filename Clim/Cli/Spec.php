@@ -9,6 +9,7 @@
 namespace Clim\Cli;
 
 use Clim\Option;
+use Clim\Task;
 
 class Spec
 {
@@ -46,7 +47,7 @@ class Spec
         $this->arguments[] = $argument;
     }
 
-    public function addTask(callable $task)
+    public function addTask(Task $task)
     {
         $this->tasks[] = $task;
     }

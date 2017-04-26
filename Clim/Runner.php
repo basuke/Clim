@@ -60,7 +60,8 @@ class Runner
             }
 
             foreach ($this->spec->tasks() as $task) {
-                $context->execute($task);
+                $result = $task->execute($context);
+                if (!is_null($result)) $context->setResult($result);
             }
 
             return $context;

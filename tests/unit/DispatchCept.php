@@ -16,14 +16,14 @@ $app->dispatch('{command}', [
         // available only for foo
         $app->option('--force');
 
-        $app->task(function ($context) {
-            // $context['age'] : from option
+        $app->task(function ($options) {
+            // $options['age'] : from option
             // $this->name     : from container
-            echo "FOO {$context['age']}-{$this->name}\n";
+            echo "FOO {$options['age']}-{$this->name}\n";
         });
     },
     'bar' => function (App $app) {
-        $app->task(function ($context) {
+        $app->task(function (Context $context) {
             echo "BAR\n";
         });
     },

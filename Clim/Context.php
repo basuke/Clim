@@ -107,18 +107,4 @@ class Context implements ContextInterface
     {
         $this->result = $result;
     }
-
-    /**
-     * @param callable $callable
-     * @return mixed
-     */
-    public function execute(callable $callable)
-    {
-        $options = new Hash($this->options());
-        $arguments = new Hash($this->arguments());
-
-        $result = call_user_func_array($callable, [$options, $arguments]);
-        if (!is_null($result)) $this->setResult($result);
-        return $result;
-    }
 }
