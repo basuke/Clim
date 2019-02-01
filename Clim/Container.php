@@ -25,21 +25,7 @@ class Container extends PimpleContainer implements ContainerInterface
         parent::__construct($values);
 
         $userSettings = isset($values['settings']) ? $values['settings'] : [];
-        $this->registerDefaultServices($userSettings);
-    }
 
-    /**
-     * This function registers the default services that Slim needs to work.
-     *
-     * All services are shared - that is, they are registered such that the
-     * same instance is returned on subsequent calls.
-     *
-     * @param array $userSettings Associative array of application settings
-     *
-     * @return void
-     */
-    protected function registerDefaultServices($userSettings)
-    {
         $defaultSettings = [
             'displayErrorDetails' => false,
         ];
@@ -54,29 +40,40 @@ class Container extends PimpleContainer implements ContainerInterface
             return Hash::merge($defaultSettings, $userSettings);
         };
 
-        if (!$this->has('argv')) {
-            $this['argv'] = $_SERVER['argv'];
+        self::registerDefaultServices($this);
+    }
+
+    /**
+     * This function registers the default services that Clim needs to work.
+     *
+     * All services are shared - that is, they are registered such that the
+     * same instance is returned on subsequent calls.
+     */
+    public static function registerDefaultServices(ContainerInterface $container) : void
+    {
+        if (!$container->has('argv')) {
+            $container['argv'] = $_SERVER['argv'];
         }
 
-        if (!$this->has('Debug')) {
-            $this['Debug'] = function (ContainerInterface $c) {
+        if (!$container->has('Debug')) {
+            $container['Debug'] = function (ContainerInterface $c) {
                 return new DebugMiddleware($c);
             };
         }
 
-        if (!$this->has('Database')) {
-            $this['Database'] = function (ContainerInterface $c) {
+        if (!$container->has('Database')) {
+            $container['Database'] = function (ContainerInterface $c) {
                 return new DatabaseMiddleware($c);
             };
         }
 
-        if (!$this->has('Console')) {
-            $this['Console'] = function (ContainerInterface $c) {
+        if (!$container->has('Console')) {
+            $container['Console'] = function (ContainerInterface $c) {
                 return new ConsoleMiddleware($c);
             };
         }
 
-        if (!$this->has('callableResolver')) {
+        if (!$container->has('callableResolver')) {
             /**
              * Instance of \Slim\Interfaces\CallableResolverInterface
              *
@@ -84,7 +81,7 @@ class Container extends PimpleContainer implements ContainerInterface
              *
              * @return CallableResolver
              */
-            $this['callableResolver'] = function (ContainerInterface $c) {
+            $container['callableResolver'] = function (ContainerInterface $c) {
                 return new CallableResolver($c);
             };
         }
