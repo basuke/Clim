@@ -48,8 +48,10 @@ class Container extends PimpleContainer implements ContainerInterface
      *
      * All services are shared - that is, they are registered such that the
      * same instance is returned on subsequent calls.
+     * 
+     * @return void
      */
-    public static function registerDefaultServices(ContainerInterface $container) : void
+    public static function registerDefaultServices(ContainerInterface $container)
     {
         if (!$container->has('argv')) {
             $container['argv'] = $_SERVER['argv'];
